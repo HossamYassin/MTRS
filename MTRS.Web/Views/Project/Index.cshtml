@@ -1,0 +1,2338 @@
+﻿@model MTRS.Core.DTOs.ProjectDto
+
+@{
+    ViewData["Title"] = "My Projects";
+}
+
+<section class="content" style="margin-top:20px;">
+    <div class="container-fluid">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">My Projects</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <select id="ddlProjects" onchange="projectChange(this);" class="form-control select2bs4">
+                                        <option>-- Select Project --</option>
+                                        @foreach (var project in ViewBag.Projects)
+                                        {
+                                            <option value="@project.Id">@project.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="row" style="margin-left: 8px;margin-top:10px;font-weight:bold;">
+                                    <span id="spNoProjects" class="alert alert-danger" style="display:none;">There are no projects assgined.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="row" style="margin-top:20px;margin-left:5px;margin-bottom:30px;width:800px">
+                            <div class="col-md-4" style="width:200px;">
+                                <div class="row" style="width:80%;font-weight: 700;">
+                                    <span id="sProjectName"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4" style="width:200px;">
+                                <div class="row" style="width:80%;font-weight: 700;">
+
+                                    <span id="sProjectCode"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4" style="width:200px;">
+                                <div class="row" style="font-weight: 700;">
+
+                                    <span id="sCustomerName"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:20px;margin-left:5px;margin-bottom:30px;width:800px">
+                            <div class="col-md-6" style="width:200px;">
+                                <div class="row" style="width:80%;font-weight: 700;">
+                                    <span id="sDescription"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:20px;margin-left:5px;margin-bottom:30px;width:200px">
+                            <div style="width:200px;display:none;" id="dCompleted">
+                                <span style="margin-top:7px;margin-right:10px;font-weight: 700;">Is Completed</span>
+                                <input style="width:110px;"  id="cbCompleted" type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="danger">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="containerDash" class="container" style="display:none;">
+
+                    <div id="projDashboard" class="row">
+                        <div class="col-3">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-info"><i class="fas fa-users"></i></span>
+
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Employees</span>
+                                    <span id="sEmployeesNumber" class="info-box-number"></span>
+                                </div>
+                                <!-- /.info-box-content -->
+                            </div>
+                            <!-- /.info-box -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-3">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-success"><i class="far fa-calendar-alt"></i></span>
+
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Pending TimeSheet</span>
+                                    <span id="sTimesheetNumber" class="info-box-number"></span>
+                                </div>
+                                <!-- /.info-box-content -->
+                            </div>
+                            <!-- /.info-box -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-3">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-warning"><i style="color:white;" class="fas fa-list-alt"></i></span>
+
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Planned Hours</span>
+                                    <span id="sPlannedHours" class="info-box-number"></span>
+                                </div>
+                                <!-- /.info-box-content -->
+                            </div>
+                            <!-- /.info-box -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-3">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-danger"><i class="far fa-calendar-plus"></i></span>
+
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Logged Hours</span>
+                                    <span id="sLoggedHours" class="info-box-number"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                </div>
+                <!-- tabs -->
+                <div id="tabs" class="card card-primary card-tabs" style="display:none;">
+                    <div class="card-header p-0 pt-1">
+                        <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="custom-tabs-one-home-tab" data-toggle="pill" href="#custom-tabs-one-home" role="tab" aria-controls="custom-tabs-one-home" aria-selected="true">Activities</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="custom-tabs-one-profile-tab" data-toggle="pill" href="#custom-tabs-one-profile" role="tab" aria-controls="custom-tabs-one-profile" aria-selected="false">Pending TimeSheets</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="custom-tabs-one-messages-tab" data-toggle="pill" href="#custom-tabs-one-messages" role="tab" aria-controls="custom-tabs-one-messages" aria-selected="false">TimeSheets History</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="pl-tabs-one-home-tab" data-toggle="pill" href="#pl-tabs-one-home" role="tab" aria-controls="custom-tabs-one-home" aria-selected="false">PL Data</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="custom-tabs-one-tabContent">
+                            <div class="tab-pane fade show active" id="custom-tabs-one-home" role="tabpanel" aria-labelledby="custom-tabs-one-home-tab">
+                                <div id="tableActivities">
+                                    <div class="row" style="margin-left: 2px;">
+                                        <div>
+                                            <button type="button" onclick="openActivity();" class="btn btn-primary btn-block" style="margin-right:20px;margin-top:20px; margin-bottom:20px; width: 140px;">New Activity</button>
+                                        </div>
+                                        <!-- /.col -->
+                                    </div>
+                                    <div class="row" style="background-color: white; margin-left: 2px;">
+                                        <table id="myDataTable" class="display" style="width:98%;margin: 10px 10px 10px 10px;">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Name</th>
+                                                    <th>Planned Hours</th>
+                                                    <th>Logged Hours</th>
+                                                    <th>Start Date</th>
+                                                    <th>End Date</th>
+                                                    <th>Assigned Employees</th>
+                                                    <th>Edit</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="custom-tabs-one-profile" role="tabpanel" aria-labelledby="custom-tabs-one-profile-tab">
+                                <div id="tablePendingTimeSheets">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <select id="ddlEmployeesTimeSheets" onchange="ddlEmployeeTimeSheetChange(this);" class="form-control select2bs4">
+                                                        </select>
+                                                    </div>
+                                                    <div class="row" style="margin-left: 8px;margin-top:10px;font-weight:bold;">
+                                                        <span id="spNoEmployeesTimesheet" class="alert alert-danger" style="display:none;">There are no pending timesheets.</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <select id="ddlTimeSheets" onchange="ddlSheetChange(this);" class="form-control select2bs4">
+                                                        </select>
+                                                    </div>
+                                                    <div class="row" style="margin-left: 8px;margin-top:10px;font-weight:bold;">
+                                                        <span id="spNoTimesheet" class="alert alert-danger" style="display:none;">There are no pending timesheets.</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="timesheetRow">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div id="timesheetDetails">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="timeSheetTable" style="display:none;">
+                                            <div class="row" style="background-color: darkseagreen;margin-top: 20px;margin-bottom:20px;">
+                                                <div class="col-md-2">
+                                                    <div class="input-group">
+                                                        <label style="margin-top:10px;">Project</label>
+                                                    </div>
+                                                </div>
+                                                <!-- /.col -->
+                                                <div class="col-md-2">
+                                                    <div class="input-group">
+                                                        <label style="margin-top:10px;margin-left: 72px;">Activity</label>
+                                                    </div>
+                                                </div>
+                                                <div style="position: absolute;margin-left: 50%;">
+                                                    <div class="row" style=" width: 700px;">
+                                                        <div class="time-cell">
+
+                                                        </div>
+                                                        <div class="time-cell">
+                                                            <div class="input-group">
+                                                                <label>Sun</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="time-cell">
+                                                            <div class="input-group">
+                                                                <label>Mon</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="time-cell">
+                                                            <div class="input-group">
+                                                                <label>Tu</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="time-cell">
+                                                            <div class="input-group">
+                                                                <label>We</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="time-cell">
+                                                            <div class="input-group">
+                                                                <label>Th</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="time-cell" style="display:none;">
+                                                            <div class="input-group">
+                                                                <label>Fri</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="time-cell" style="display:none;">
+                                                            <div class="input-group">
+                                                                <label>Sat</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div id="tsContainer"></div>
+                                            <!-- footer -->
+                                            <div class="row" style="background-color: darkseagreen;">
+                                                <div class="time-cell-total" style="font-weight:bold; width: 90px; padding-top: 8px; margin-left: 47%;">
+                                                    Total Hours
+                                                </div>
+                                                <div class="time-cell-total">
+                                                    <div class="input-group">
+                                                        <input readonly type="text" class="form-control sunTotal" data-mask>
+                                                    </div>
+                                                </div>
+                                                <div class="time-cell-total">
+                                                    <div class="input-group">
+                                                        <input readonly type="text" class="form-control monTotal" data-mask>
+                                                    </div>
+                                                </div>
+                                                <div class="time-cell-total">
+                                                    <div class="input-group">
+                                                        <input readonly type="text" class="form-control tuTotal" data-mask>
+                                                    </div>
+                                                </div>
+                                                <div class="time-cell-total">
+                                                    <div class="input-group">
+                                                        <input readonly type="text" class="form-control weTotal" data-mask>
+                                                    </div>
+                                                </div>
+                                                <div class="time-cell-total">
+                                                    <div class="input-group">
+                                                        <input readonly type="text" class="form-control thTotal" data-mask>
+                                                    </div>
+                                                </div>
+                                                <div class="time-cell-total" style="display:none;">
+                                                    <div class="input-group">
+                                                        <input readonly type="text" class="form-control friTotal" data-mask>
+                                                    </div>
+                                                </div>
+                                                <div class="time-cell-total" style="display:none;">
+                                                    <div class="input-group">
+                                                        <input readonly type="text" class="form-control satTotal" data-mask>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-1">
+                                                    <button onclick="approveTimeSheet();" type="button" class="btn btn-primary btn-block" style="width:120px;margin-top:20px;">Approve</button>
+                                                </div>
+                                                <div class="col-1" style="margin-left:60px;">
+                                                    <button onclick="rejectTimeSheet();" type="button" class="btn btn-danger btn-block" style="width:120px;margin-top:20px; background-color:red;">Reject</button>
+                                                </div>
+                                                <!-- /.col -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="custom-tabs-one-messages" role="tabpanel" aria-labelledby="custom-tabs-one-messages-tab">
+                                <div id="tableHistoryTimeSheets">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <select id="ddlEmployeesHistoryTimeSheets" onchange="ddlEmployeeTimeSheetHistoryChange(this);" class="form-control select2bs4">
+                                                        </select>
+                                                    </div>
+                                                    <div class="row" style="margin-left: 8px;margin-top:10px;font-weight:bold;">
+                                                        <span id="spNoHistoryTimesheets" class="alert alert-danger" style="display:none;">There are no timesheets.</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <select id="ddlTimeSheetsHistory" onchange="ddlSheetHistoryChange(this);" class="form-control select2bs4">
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="timesheetRowHistory">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div id="timesheetHistoryDetails">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="timeSheetHistoryTable" style="display:none;">
+                                            <div class="row" style="background-color: darkseagreen;margin-top: 20px;margin-bottom:20px;">
+                                                <div class="col-md-2">
+                                                    <div class="input-group">
+                                                        <label style="margin-top:10px;">Project</label>
+                                                    </div>
+                                                </div>
+                                                <!-- /.col -->
+                                                <div class="col-md-2">
+                                                    <div class="input-group">
+                                                        <label style="margin-top:10px;margin-left: 72px;">Activity</label>
+                                                    </div>
+                                                </div>
+                                                <div style="position: absolute;margin-left: 50%;">
+                                                    <div class="row" style=" width: 700px;">
+                                                        <div class="time-cell">
+
+                                                        </div>
+                                                        <div class="time-cell">
+                                                            <div class="input-group">
+                                                                <label>Sun</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="time-cell">
+                                                            <div class="input-group">
+                                                                <label>Mon</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="time-cell">
+                                                            <div class="input-group">
+                                                                <label>Tu</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="time-cell">
+                                                            <div class="input-group">
+                                                                <label>We</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="time-cell">
+                                                            <div class="input-group">
+                                                                <label>Th</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="time-cell" style="display:none;">
+                                                            <div class="input-group">
+                                                                <label>Fri</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="time-cell" style="display:none;">
+                                                            <div class="input-group">
+                                                                <label>Sat</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div id="tsContainerHistory"></div>
+                                            <!-- footer -->
+                                            <div class="row" style="background-color: darkseagreen;">
+                                                <div class="time-cell-total" style="font-weight:bold; width: 90px; padding-top: 8px; margin-left: 47%;">
+                                                    Total Hours
+                                                </div>
+                                                <div class="time-cell-total">
+                                                    <div class="input-group">
+                                                        <input readonly type="text" class="form-control sunTotal" data-mask>
+                                                    </div>
+                                                </div>
+                                                <div class="time-cell-total">
+                                                    <div class="input-group">
+                                                        <input readonly type="text" class="form-control monTotal" data-mask>
+                                                    </div>
+                                                </div>
+                                                <div class="time-cell-total">
+                                                    <div class="input-group">
+                                                        <input readonly type="text" class="form-control tuTotal" data-mask>
+                                                    </div>
+                                                </div>
+                                                <div class="time-cell-total">
+                                                    <div class="input-group">
+                                                        <input readonly type="text" class="form-control weTotal" data-mask>
+                                                    </div>
+                                                </div>
+                                                <div class="time-cell-total">
+                                                    <div class="input-group">
+                                                        <input readonly type="text" class="form-control thTotal" data-mask>
+                                                    </div>
+                                                </div>
+                                                <div class="time-cell-total" style="display:none;">
+                                                    <div class="input-group">
+                                                        <input readonly type="text" class="form-control friTotal" data-mask>
+                                                    </div>
+                                                </div>
+                                                <div class="time-cell-total" style="display:none;">
+                                                    <div class="input-group">
+                                                        <input readonly type="text" class="form-control satTotal" data-mask>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade show" id="pl-tabs-one-home" role="tabpanel" aria-labelledby="custom-tabs-one-home-tab">
+                                <div class="row" style="background-color:white;width:100%">
+                                    <table id="myDataTablePL" class="display" style="width:100%;margin: 10px 10px 10px 10px;">
+                                        <thead>
+                                            <tr>
+                                                <th>Account Name</th>
+                                                <th>Grad</th>
+                                                <th>Percantage</th>
+                                                <th>Planned Amount</th>
+                                                <th>Acctual Hours</th>
+                                                <th>Start Date</th>
+                                                <th>End Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="addActivity" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" style="width:650px;">
+            <div class="modal-header">
+                <h4 class="modal-title">New Activity</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card-body">
+                    <div class="row" style="width: 600px;">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Name<span style="color:red;">*</span></label>
+                                <div class="input-group">
+                                    <select id="ddlActivities" class="form-control select2bs4">
+                                    </select>
+                                </div>
+                                <div class="row" style="margin-left: 3px;">
+                                    <span id="errActivityName" style="color:red;display:none;">Activity is required</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Planned Hours<span style="color:red;">*</span></label>
+                                <div class="input-group">
+                                    <input type="number" id="inpActivitiyPlannedHours" class="form-control" data-mask>
+                                </div>
+                                <div class="row" style="margin-left: 3px;">
+                                    <span id="errActivitiyPlannedHours" style="color:red;display:none;">Planned hours not valid</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Start Date<span style="color:red;">*</span></label>
+                                <div class="input-group">
+                                    <input type="text" id="txtStartDate" style="z-index:999999;" class="form-control" data-mask>
+                                </div>
+                                <div class="row" style="margin-left: 3px;">
+                                    <span id="errStartDate" style="color:red;display:none;">Start date not valid</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>End Date<span style="color:red;">*</span></label>
+                                <div class="input-group">
+                                    <input type="text" id="txtEndDate" style="z-index:999999;" class="form-control" data-mask>
+                                </div>
+                                <div class="row" style="margin-left: 3px;">
+                                    <span id="errEndDate" style="color:red;display:none;">End date not valid</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <!-- /.row -->
+                <div class="row">
+                    <div class="col-4">
+                        <button type="button" onclick="addActivity();" class="btn btn-primary btn-block" style="width:80px;margin-top:20px;margin-left: 20px;">Save</button>
+                    </div>
+                    <!-- /.col -->
+                </div>
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="editActivity" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" style="width: 650px;">
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Activity</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card-body">
+                    <div class="row" style="width: 600px;">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Name<span style="color:red;">*</span></label>
+                                <input type="text" hidden id="inpEditId" class="form-control" data-mask>
+                                <div class="input-group">
+                                    <select id="ddlActivitiesEdit" class="form-control select2bs4">
+                                    </select>
+                                </div>
+                                <div class="row" style="margin-left: 3px;">
+                                    <span id="errEditActivityName" style="color:red;display:none;">Activity is required</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Planned Hours<span style="color:red;">*</span></label>
+                                <div class="input-group">
+                                    <input type="number" id="inpEditActivitiyPlannedHours" class="form-control" data-mask>
+                                </div>
+                                <div class="row" style="margin-left: 3px;">
+                                    <span id="errEditActivitiyPlannedHours" style="color:red;display:none;">Planned hours not valid</span>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Start Date<span style="color:red;">*</span></label>
+                                <div class="input-group">
+                                    <input type="text" id="txtStartDateEdit" style="z-index:999999;" class="form-control" data-mask>
+                                </div>
+                                <div class="row" style="margin-left: 3px;">
+                                    <span id="errStartDateEdit" style="color:red;display:none;">Start date not valid</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>End Date<span style="color:red;">*</span></label>
+                                <div class="input-group">
+                                    <input type="text" id="txtEndDateEdit" style="z-index:999999;" class="form-control" data-mask>
+                                </div>
+                                <div class="row" style="margin-left: 3px;">
+                                    <span id="errEndDateEdit" style="color:red;display:none;">End date not valid</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <!-- /.row -->
+                <div class="row">
+                    <div class="col-4">
+                        <button type="button" onclick="editActivity();" class="btn btn-primary btn-block" style="width:80px;margin-top:20px;margin-left: 20px;">Save</button>
+                    </div>
+                    <!-- /.col -->
+                </div>
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="assignEmployees" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" style="width: 600px;">
+            <div class="modal-header">
+                <h4 class="modal-title">Assign Employees</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card-body">
+                    <div class="row" style="width: 600px;">
+                        <div>
+                            <div class="form-group">
+                                <label>Select Employee:<span style="color:red;">*</span></label>
+                                <div class="input-group" style="width:350px;">
+                                    <input type="text" hidden id="inpActivityId" class="form-control" data-mask>
+                                    <select id="ddlEmployees" style="width:350px;" class="form-control select2bs4">
+                                    </select>
+                                </div>
+                                <div class="row" style="margin-left: 3px;">
+                                    <span id="errEmplyeeRequired" style="color:red;display:none;">Employee is required</span>
+                                </div>
+                                <div>
+                                    <button type="button" onclick="assignEmployee();" class="btn btn-primary btn-block" style="width:80px;margin-top:20px;">Assign</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                    <div class="row" style="background-color: white;margin-left: -20px;">
+                        <table id="assignedDataTable" class="display" style="width:98%;margin: 10px 10px 10px 10px;">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Unassigned</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="addComments" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" style="width: 550px;">
+            <div class="modal-header">
+                <h4 class="modal-title">Reject comment</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card-body">
+                    <div class="row" style="width: 600px;">
+                        <div style="width:500px;">
+                            <div class="form-group">
+                                <label>Comment<span style="color:red;">*</span></label>
+                                <div class="input-group">
+                                    <textarea type="text" id="inpComment" class="form-control" data-mask style="height:100px;"></textarea>
+                                </div>
+                                <div class="row" style="margin-left: 3px;">
+                                    <span id="errComment" style="color:red;display:none;">Comment is required</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <!-- /.row -->
+                <div class="row">
+                    <div class="col-4">
+                        <button type="button" onclick="addRejectComment();" class="btn btn-primary btn-block" style="width:80px;margin-top:20px;margin-left: 20px;">Save</button>
+                    </div>
+                    <!-- /.col -->
+                </div>
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
+<link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/flick/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+
+<!-- Select2 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.4.1/flatly/bootstrap.min.css">
+<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+<script src="~/plugins/select2/js/select2.full.min.js"></script>
+
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+<link rel="stylesheet" href="http://cdn.jsdelivr.net/gh/xxjapp/xdialog@3/xdialog.min.css">
+<script src="http://cdn.jsdelivr.net/gh/xxjapp/xdialog@3/xdialog.min.js"></script>
+
+<script type="text/javascript">
+
+    $(function () {
+
+        $("#txtStartDate").datepicker({
+            onSelect: function (selected) {
+                $("#txtEndDate").datepicker("option", "minDate", selected)
+            }
+        });
+        $("#txtEndDate").datepicker({
+            onSelect: function (selected) {
+                $("#txtStartDate").datepicker("option", "maxDate", selected)
+            }
+        });
+
+        $("#txtStartDateEdit").datepicker({
+            onSelect: function (selected) {
+                $("#txtEndDateEdit").datepicker("option", "minDate", selected)
+            }
+        });
+        $("#txtEndDateEdit").datepicker({
+            onSelect: function (selected) {
+                $("#txtStartDateEdit").datepicker("option", "maxDate", selected)
+            }
+        });
+
+        $("#txtStartDate").val(new Date().toLocaleDateString());
+        $("#txtEndDate").val(new Date().toLocaleDateString());
+
+        $("#txtStartDate").keydown(function (event) {
+            event.preventDefault();
+        });
+
+        $("#txtStartDateEdit").keydown(function (event) {
+            event.preventDefault();
+        });
+
+        $("#txtEndDateEdit").keydown(function (event) {
+            event.preventDefault();
+        });
+
+        $("#txtEndDate").keydown(function (event) {
+            event.preventDefault();
+        });
+
+        if (getParameterByName('id') != null) {
+            $('#ddlProjects').val(getParameterByName('id'));
+            projectChange($('#ddlProjects'));
+        }
+
+       
+    });
+
+    var managerId = 0;
+
+    function projectChange(ddlProj) {
+        xdialog.startSpin();
+        if (ddlProj.value != '') {
+            var table = $('#myDataTable').DataTable();
+            table.destroy();
+
+            $('#tablePanel').attr('style', 'display:block;');
+            $('#myDataTable').dataTable({
+                ajax: {
+                    url: '/project/GetProjectActivities?projectId=' + $(ddlProj).val(),
+                    dataSrc: function (data) {
+                        var totalLogged = 0;
+                        var plannedHours = 0;
+                        $.each(data, function () {
+                            totalLogged += this.loggedHours;
+                            plannedHours += this.plannedHours;
+                        });
+
+                        $('#sPlannedHours').text(plannedHours);
+                        $('#sLoggedHours').text(totalLogged);
+                        $("#tabs").attr('style', 'display:block');
+                        xdialog.stopSpin();
+                        return data;
+                    }
+                },
+                columns: [
+                    { data: 'id' },
+                    { data: 'name' },
+                    { data: 'plannedHours' },
+                    { data: 'loggedHours' },
+                    {
+                        data: 'startDate',
+                        render: function (data, type) {
+                            return (new Date(data)).formatMMDDYYYY();
+                        }
+                    },
+                    {
+                        data: 'endDate',
+                        render: function (data, type) {
+                            return (new Date(data)).formatMMDDYYYY();
+                        }
+                    },
+                    {
+                        data: null,
+                        className: "dt-center",
+                        defaultContent: '<i class="fas fa-users" style="color:#0062cc;cursor: pointer;"></i>',
+                        orderable: false
+                    },
+                    {
+                        data: null,
+                        className: "dt-center editor-edit",
+                        defaultContent: '<i class="fas fa-edit" style="color:#0062cc;cursor: pointer;"></i>',
+                        orderable: false
+                    },
+                ],
+                "columnDefs": [
+                    {
+                        "targets": [0],
+                        "visible": false,
+                        "searchable": false
+                    }
+                ]
+            });
+
+            $('#cbCompleted').off('change.bootstrapSwitch');
+            //get project
+            xdialog.startSpin();
+            $.ajax({
+                type: "GET",
+                url: "/Project/GetProjectById?projectId=" + $(ddlProj).val(),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    managerId = data.managerId;
+                    $("#sProjectName").text("Project Name: " + data.name);
+                    var code = "";
+                    if (data.code != null) {
+                        code = data.code;
+                    }
+
+                    var description = "";
+                    if (data.description != null) {
+                        description = data.description;
+                    }
+
+                    $("#sProjectCode").text("Opportunity Id: " + code);
+                    $('#sCustomerName').text("Customer Name: " + data.customer.name);
+                    $("#sDescription").text("Description: " + description);
+                    $('#dCompleted').attr('style', 'width:200px;display:block;');
+                    if (data.isCompleted == true) {
+                        $('#cbCompleted').prop('checked', true).change();
+                    }
+                    else {
+                        $('#cbCompleted').prop('checked', false).change();
+                    }
+
+                    $('#cbCompleted').on('change.bootstrapSwitch', function (e) {
+                        chCompletedChange(e.target);
+                    });
+
+                    var tablePL = $('#myDataTablePL').DataTable();
+                    tablePL.destroy();
+                    //get PL data
+                    getPLData(code);
+
+                    xdialog.stopSpin();
+                },
+                failure: function (response) {
+                    console.log(response);
+                    xdialog.stopSpin();
+                }
+            });
+
+
+            //get project projDashboard
+            xdialog.startSpin();
+            $.ajax({
+                type: "GET",
+                url: "/Project/GetProjectDashboard?projectId=" + $(ddlProj).val(),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $("#sEmployeesNumber").text(data.employeesCount);
+                    $("#sTimesheetNumber").text(data.pendingTimeSheetCount);
+
+                    $("#containerDash").attr('style', 'display:block;');
+                    xdialog.stopSpin();
+                },
+                failure: function (response) {
+                    console.log(response);
+                    xdialog.stopSpin();
+                }
+            });
+
+            //get project projDashboard
+            xdialog.startSpin();
+            $.ajax({
+                type: "GET",
+                url: "/Project/GetProjectBaseActivities",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    if (data.length > 0) {
+                        $("#ddlActivities").empty();
+                        $('#ddlActivities').append($("<option value='0'>-- Select Activity --</option>"));
+                        $.each(data, function () {
+                            $("#ddlActivities").append($("<option></option>").val(this.id).html(this.name));
+                        });
+
+                        $("#ddlActivitiesEdit").empty();
+                        $('#ddlActivitiesEdit').append($("<option value='0'>-- Select Activity --</option>"));
+                        $.each(data, function () {
+                            $("#ddlActivitiesEdit").append($("<option></option>").val(this.id).html(this.name));
+                        });
+
+                        xdialog.stopSpin();
+                    }
+                    xdialog.stopSpin();
+                },
+                failure: function (response) {
+                    console.log(response);
+                    xdialog.stopSpin();
+                }
+            });
+
+            //get pending employees GetPendingEmployeesByProject
+            xdialog.startSpin();
+            $.ajax({
+                type: "GET",
+                url: "/Project/GetPendingEmployeesByProject?projectId=" + $(ddlProj).val(),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                    if (data.length > 0) {
+                        $('#ddlEmployeesTimeSheets').attr('style', 'display:block;');
+                        $('#ddlTimeSheets').attr('style', 'display:block;');
+                        $('#spNoEmployeesTimesheet').attr('style', 'display:none;');
+                        $("#ddlEmployeesTimeSheets").empty();
+                        $('#ddlEmployeesTimeSheets').append($("<option value='0'>-- Select Employee --</option>"));
+                        $.each(data, function () {
+                            $("#ddlEmployeesTimeSheets").append($("<option></option>").val(this.id).html(this.firstName));
+                        });
+                        $('#ddlTimeSheets').attr('style', 'display:none;')
+                        xdialog.stopSpin();
+                    }
+                    else {
+                        $('#spNoEmployeesTimesheet').attr('style', 'display:block;');
+                        $('#ddlEmployeesTimeSheets').attr('style', 'display:none;');
+                        $('#ddlEmployeesTimeSheets').empty();
+                        $('#ddlTimeSheets').attr('style', 'display:none;');
+                        $('#timesheetRow').attr('style', 'display:none;');
+                        $('#timeSheetTable').attr('style', 'display:none;');
+                        xdialog.stopSpin();
+                    }
+                },
+                failure: function (response) {
+                    console.log(response);
+                    xdialog.stopSpin();
+                }
+            });
+
+            //get pending employees GetEmployeesHistoryByProject
+            xdialog.startSpin();
+            $.ajax({
+                type: "GET",
+                url: "/Project/GetEmployeesByProject?projectId=" + $(ddlProj).val(),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    if (data.length > 0) {
+                        $('#ddlEmployeesHistoryTimeSheets').attr('style', 'display:block;');
+                        $('#ddlTimeSheetsHistory').attr('style', 'display:block;');
+                        $("#ddlEmployeesHistoryTimeSheets").empty();
+                        $('#ddlEmployeesHistoryTimeSheets').append($("<option value='0'>-- Select Employee --</option>"));
+                        $.each(data, function () {
+                            $("#ddlEmployeesHistoryTimeSheets").append($("<option></option>").val(this.id).html(this.firstName));
+                        });
+                        ddlEmployeeTimeSheetHistoryChange($(ddlProj));
+                        $('#timesheetRowHistory').attr('style', 'display:block;');
+                        $('#spNoHistoryTimesheets').attr('style', 'display:none;');
+                        xdialog.stopSpin();
+                    }
+                    else {
+
+                        $('#ddlEmployeesHistoryTimeSheets').attr('style', 'display:none;');
+                        $('#ddlEmployeesHistoryTimeSheets').empty();
+                        $('#ddlTimeSheetsHistory').attr('style', 'display:none;');
+                        $('#timesheetRowHistory').attr('style', 'display:none;');
+                        $('#timeSheetHistoryTable').attr('style', 'display:none;');
+                        $('#spNoHistoryTimesheets').attr('style', 'display:block;');
+                        xdialog.stopSpin();
+                    }
+                },
+                failure: function (response) {
+                    console.log(response);
+                    xdialog.stopSpin();
+                }
+            });
+
+            //get PL date
+            xdialog.stopSpin();
+        }
+        else {
+            var table = $('#myDataTable').DataTable();
+            table.destroy();
+
+            $('#tablePanel').attr('style', 'display:none;');
+        }
+    }
+
+    function getPLData(code) {
+        $('#myDataTablePL').dataTable({
+            ajax: {
+                url: '/manager/GetPLData?opportunityId=' + code + "&projectId=" + $('#ddlProjects').val(),
+                dataSrc: ''
+            },
+            columns: [
+                { data: 'accountName' },
+                { data: 'grad' },
+                { data: 'percentage' },
+                { data: 'totalAmount' },
+                { data: 'acctualAmount' },
+                {
+                    data: 'startDate',
+                    render: function (data, type) {
+                        return (new Date(data)).formatMMDDYYYY();
+                    }
+                },
+                {
+                    data: 'endDate',
+                    render: function (data, type) {
+                        return (new Date(data)).formatMMDDYYYY();
+                    }
+                },
+            ]
+        });
+    }
+
+    function chCompletedChange(cbCompleted) {
+        console.log($('#cbCompleted')[0].checked);
+        if ($('#cbCompleted')[0].checked) {
+            xdialog.open({
+                title: 'Project Completed',
+                body: 'Employees will not able to submit timesheet on this project, Please confirm ?',
+                buttons: ['ok', 'cancel'],
+                style: 'min-width:38em;',
+                onok: function (param) {
+                    xdialog.startSpin();
+
+                    $.ajax({
+                        type: "GET",
+                        url: "/project/CompleteProject?projectId=" + $("#ddlProjects").val() + "&isCompleted=true",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            xdialog.stopSpin();
+                            xdialog.open({
+                                title: 'Information',
+                                body: 'Project updated successfully',
+                                buttons: ['ok'],
+                                style: 'min-width:38em;',
+                                onok: function (param) {
+                                }
+                            });
+                            xdialog.stopSpin();
+                        },
+                        failure: function (response) {
+                            console.log(response);
+                            xdialog.stopSpin();
+                        }
+                    });
+                },
+                oncancel: function (param) {
+                    $('#cbCompleted').off('change.bootstrapSwitch', null);
+                    $('#cbCompleted').prop('checked', false).change();
+                    $('#cbCompleted').on('change.bootstrapSwitch', function (e) {
+                        chCompletedChange(e.target);
+                    });
+                }
+            });
+        }
+        else {
+            xdialog.open({
+                title: 'Project Completed',
+                body: 'Employees will be able to submit timesheet on this project, Please confirm ?',
+                buttons: ['ok', 'cancel'],
+                style: 'min-width:38em;',
+                onok: function (param) {
+                    xdialog.startSpin();
+
+                    $.ajax({
+                        type: "GET",
+                        url: "/project/CompleteProject?projectId=" + $("#ddlProjects").val() + "&isCompleted=false",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            xdialog.stopSpin();
+                            xdialog.open({
+                                title: 'Information',
+                                body: 'Project updated successfully',
+                                buttons: ['ok'],
+                                style: 'min-width:38em;',
+                                onok: function (param) {
+                                }
+                            });
+                            xdialog.stopSpin();
+                        },
+                        failure: function (response) {
+                            console.log(response);
+                            xdialog.stopSpin();
+                        }
+                    });
+                },
+                oncancel: function (param) {
+                    $('#cbCompleted').off('change.bootstrapSwitch', null);
+                    $('#cbCompleted').prop('checked', true).change();
+                    $('#cbCompleted').on('change.bootstrapSwitch', function (e) {
+                        chCompletedChange(e.target);
+                    });
+                }
+            });
+        }
+    }
+
+    function openActivity() {
+        $('#addActivity').modal('show');
+    }
+
+    function addActivity() {
+        xdialog.startSpin();
+        var isValid = false;
+        if ($('#ddlActivities').val() == '0') {
+            $('#errActivityName').attr('style', 'display:block;color:red;');
+            isValid = false;
+        }
+        else {
+            $('#errActivityName').attr('style', 'display:none;color:red;');
+            isValid = true;
+        }
+
+        if ($('#inpActivitiyPlannedHours').val() < 1) {
+            $('#errActivitiyPlannedHours').attr('style', 'display:block;color:red;');
+            isValid = false;
+        }
+        else {
+            $('#errActivitiyPlannedHours').attr('style', 'display:none;color:red;');
+            isValid = true;
+        }
+
+        if (isValid) {
+            var startDate = new Date($('#txtStartDate').val().replace('/', '-')).toISOString();
+            var startDateUTC = new Date(startDate);
+            startDateUTC.setDate(startDateUTC.getDate() + 1);
+            var endDate = new Date($('#txtEndDate').val().replace('/', '-')).toISOString();
+            var endDateUTC = new Date(endDate);
+            endDateUTC.setDate(endDateUTC.getDate() + 1);
+
+            var activity = {
+                projectId: $('#ddlProjects').val(),
+                name: $('#ddlActivities option:selected').text(),
+                baseActivityId: $('#ddlActivities').val(),
+                plannedHours: $('#inpActivitiyPlannedHours').val(),
+                startDate: startDateUTC,
+                endDate: endDateUTC,
+            };
+
+            xdialog.startSpin();
+            $.ajax({
+                type: "POST",
+                url: "/project/addactivity",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(activity),
+                dataType: "json",
+                success: function (data) {
+                    $('#addActivity').modal('hide');
+                    xdialog.stopSpin();
+                    projectChange($('#ddlProjects'));
+                },
+                failure: function (response) {
+                    xdialog.stopSpin();
+                    console.log(response);
+                }
+            });
+        }
+    }
+
+    Date.prototype.addDays = function (n) {
+        this.setDate(this.getDate() + n);
+    };
+
+
+    $(document).ready(function () {
+        $("#ddlEmployees").select2({
+            allowClear: true
+        });
+
+        $("#ddlEmployeesTimeSheets").select2({
+            allowClear: true
+        });
+
+        $('body').on('click', '.fa-edit', function () {
+            var currentRow = $(this).closest("tr");
+
+            var data = $('#myDataTable').DataTable().row(currentRow).data();
+            $('#inpEditId').val(data['id']);
+            $('#ddlActivitiesEdit').val(data['baseActivityId']);
+            $('#inpEditActivitiyPlannedHours').val(data['plannedHours']);
+            $('#txtStartDateEdit').val(new Date(data['startDate']).toLocaleDateString());
+            $('#txtEndDateEdit').val(new Date(data['endDate']).toLocaleDateString());
+            $('#editActivity').modal('show');
+        });
+
+        $('body').on('click', '.fa-users', function () {
+            xdialog.startSpin();
+            var currentRow = $(this).closest("tr");
+
+            var data = $('#myDataTable').DataTable().row(currentRow).data();
+            $('#inpActivityId').val(data['id']);
+            $.ajax({
+                type: "GET",
+                url: "/project/getemployees",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $("#ddlEmployees").empty();
+                    $.each(data, function () {
+                        $("#ddlEmployees").append($("<option></option>").val(this.id).html(this.firstName));
+                    });
+                    xdialog.stopSpin();
+                },
+                failure: function (response) {
+                    console.log(response);
+                }
+            });
+            var table = $('#assignedDataTable').DataTable();
+            table.destroy();
+
+            $('#assignedDataTable').dataTable({
+                ajax: {
+                    url: '/project/GetAssignedEmployeesByActivityId?activityId=' + $('#inpActivityId').val(),
+                    dataSrc: ''
+                },
+                columns: [
+                    { data: 'id' },
+                    { data: 'firstName' },
+                    {
+                        data: null,
+                        className: "dt-center",
+                        defaultContent: '<i class="fas fa-user-times" style="color:#0062cc;cursor: pointer;"></i>',
+                        orderable: false
+                    },
+                ],
+                "columnDefs": [
+                    {
+                        "targets": [0],
+                        "visible": false,
+                        "searchable": false
+                    }
+                ]
+            });
+            $('#assignEmployees').modal('show');
+            xdialog.stopSpin();
+        });
+
+        $('body').on('click', '.fa-user-times', function () {
+            var currentRow = $(this).closest("tr");
+
+            var data = $('#assignedDataTable').DataTable().row(currentRow).data();
+            unassignEmployee(data['id']);
+        });
+    });
+
+    function editActivity() {
+        xdialog.startSpin();
+
+        var isValid = false;
+        if ($('#ddlActivitiesEdit').val() == '0') {
+            $('#errEditActivityName').attr('style', 'display:block;color:red;');
+            isValid = false;
+        }
+        else {
+            $('#errEditActivityName').attr('style', 'display:none;color:red;');
+            isValid = true;
+        }
+
+        if ($('#inpEditActivitiyPlannedHours').val() < 1) {
+            $('#errEditActivitiyPlannedHours').attr('style', 'display:block;color:red;');
+            isValid = false;
+        }
+        else {
+            $('#errEditActivitiyPlannedHours').attr('style', 'display:none;color:red;');
+            isValid = true;
+        }
+
+        if (isValid) {
+            var startDate = new Date($('#txtStartDateEdit').val().replace('/', '-')).toISOString();
+            var startDateUTC = new Date(startDate);
+            startDateUTC.setDate(startDateUTC.getDate() + 1);
+            var endDate = new Date($('#txtEndDateEdit').val().replace('/', '-')).toISOString();
+            var endDateUTC = new Date(endDate);
+            endDateUTC.setDate(endDateUTC.getDate() + 1);
+            var activity = {
+                id: $('#inpEditId').val(),
+                projectId: $('#ddlProjects').val(),
+                name: $('#ddlActivitiesEdit option:selected').text(),
+                baseActivityId: $('#ddlActivitiesEdit').val(),
+                plannedHours: $('#inpEditActivitiyPlannedHours').val(),
+                startDate: startDateUTC,
+                endDate: endDateUTC,
+            };
+
+            console.log(activity);
+
+            xdialog.startSpin();
+            $.ajax({
+                type: "POST",
+                url: "/project/editactivity",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(activity),
+                dataType: "json",
+                success: function (data) {
+                    $('#editActivity').modal('hide');
+                    xdialog.stopSpin();
+                    projectChange($('#ddlProjects'));
+                },
+                failure: function (response) {
+                    xdialog.stopSpin();
+                    console.log(response);
+                }
+            });
+        }
+    }
+
+    function getParameterByName(name, url = window.location.href) {
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    function assignEmployee() {
+        var isValid = true;
+        if ($('#ddlEmployees').val().trim() == '') {
+            $('#errEmplyeeRequired').attr('style', 'display:block;');
+            isValid = false;
+        }
+
+        if (isValid) {
+            var userActivity = {
+                activityId: $('#inpActivityId').val(),
+                userId: $('#ddlEmployees').val(),
+                isActive: true
+            }
+
+            xdialog.startSpin();
+            $.ajax({
+                type: "POST",
+                url: "/project/AssignEmployee",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(userActivity),
+                dataType: "json",
+                success: function (data) {
+                    if (data != "0") {
+                        var table = $('#assignedDataTable').DataTable();
+                        table.destroy();
+
+                        $('#assignedDataTable').dataTable({
+                            ajax: {
+                                url: '/project/GetAssignedEmployeesByActivityId?activityId=' + $('#inpActivityId').val(),
+                                dataSrc: ''
+                            },
+                            columns: [
+                                { data: 'id' },
+                                { data: 'firstName' },
+                                {
+                                    data: null,
+                                    className: "dt-center",
+                                    defaultContent: '<i class="fas fa-user-times" style="color:#0062cc;cursor: pointer;"></i>',
+                                    orderable: false
+                                },
+                            ],
+                            "columnDefs": [
+                                {
+                                    "targets": [0],
+                                    "visible": false,
+                                    "searchable": false
+                                }
+                            ]
+                        });
+                    }
+                    xdialog.stopSpin();
+                },
+                failure: function (response) {
+                    xdialog.stopSpin();
+                    console.log(response);
+                }
+            });
+        }
+    }
+
+    function unassignEmployee(userId) {
+        var userActivity = {
+            activityId: $('#inpActivityId').val(),
+            userId: userId,
+            isActive: false
+        }
+
+        xdialog.startSpin();
+        $.ajax({
+            type: "POST",
+            url: "/project/UnassignEmployee",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(userActivity),
+            dataType: "json",
+            success: function (data) {
+                var table = $('#assignedDataTable').DataTable();
+                table.destroy();
+
+                $('#assignedDataTable').dataTable({
+                    ajax: {
+                        url: '/project/GetAssignedEmployeesByActivityId?activityId=' + $('#inpActivityId').val(),
+                        dataSrc: ''
+                    },
+                    columns: [
+                        { data: 'id' },
+                        { data: 'firstName' },
+                        {
+                            data: null,
+                            className: "dt-center",
+                            defaultContent: '<i class="fas fa-user-times" style="color:#0062cc;cursor: pointer;"></i>',
+                            orderable: false
+                        },
+                    ],
+                    "columnDefs": [
+                        {
+                            "targets": [0],
+                            "visible": false,
+                            "searchable": false
+                        }
+                    ]
+                });
+                xdialog.stopSpin();
+            },
+            failure: function (response) {
+                xdialog.stopSpin();
+                console.log(response);
+            }
+        });
+    }
+</script>
+
+<script type="text/javascript">
+
+    function ddlEmployeeTimeSheetChange(ddlemployees) {
+        xdialog.startSpin();
+        $.ajax({
+            type: "GET",
+            url: "/project/GetEmployeeTimeSheetByProject?projectId=" + $('#ddlProjects').val() + "&employeeId=" + $('#ddlEmployeesTimeSheets').val(),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                if (data.length > 0) {
+                    $('#ddlTimeSheets').empty();
+                    $('#ddlTimeSheets').attr('style', 'display:block;')
+
+                    $.each(data, function () {
+                        var fromDate = new Date(this.fromDate);
+                        var toDate = new Date(this.toDate);
+
+                        var text = "From " + fromDate.formatMMDDYYYY() + " To " + toDate.formatMMDDYYYY();
+                        $('#ddlTimeSheets').append($("<option></option>").val(this.id).html(text));
+                    });
+                    $('#spNoTimesheet').attr('style', 'display:none;');
+                    ddlSheetChange($('#ddlTimeSheets'));
+                    xdialog.stopSpin();
+                }
+                else {
+                    $('#timeSheetTable').attr('style', 'display:none;');
+                    $('#spNoTimesheet').attr('style', 'display:block;');
+                    xdialog.stopSpin();
+                }
+            },
+            failure: function (response) {
+                xdialog.stopSpin();
+                console.log(response);
+            }
+        });
+    }
+
+    function ddlEmployeeTimeSheetHistoryChange(ddlemployees) {
+        if ($('#ddlEmployeesHistoryTimeSheets').val() != '0') {
+            xdialog.startSpin();
+            $.ajax({
+                type: "GET",
+                url: "/timesheet/GetTimeSheetHistory?userId=" + $('#ddlEmployeesHistoryTimeSheets').val(),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    if (data.length > 0) {
+                        $('#ddlTimeSheetsHistory').empty();
+                        $('#ddlTimeSheetsHistory').attr('style', 'display:block;');
+
+                        $.each(data, function () {
+                            var fromDate = new Date(this.fromDate);
+                            var toDate = new Date(this.toDate);
+
+                            var text = "From " + fromDate.formatMMDDYYYY() + " To " + toDate.formatMMDDYYYY();
+                            $('#ddlTimeSheetsHistory').append($("<option></option>").val(this.id).html(text));
+                        });
+                        ddlSheetHistoryChange($('#ddlTimeSheetsHistory'));
+                        $('#timesheetHistoryDetails').attr('style', 'display:block;');
+                        xdialog.stopSpin();
+                    }
+                    else {
+                        $('#timeSheetTable').attr('style', 'display:none;');
+                        $('#timesheetHistoryDetails').attr('style', 'display:none;');
+                        $('#spNoTimesheet').attr('style', 'display:block;');
+                        xdialog.stopSpin();
+                    }
+                },
+                failure: function (response) {
+                    xdialog.stopSpin();
+                    console.log(response);
+                }
+            });
+        }
+        else {
+            $('#ddlTimeSheetsHistory').empty();
+            $('#ddlTimeSheetsHistory').attr('style', 'display:none;');
+            $('#timesheetRowHistory').attr('style', 'display:none;');
+            $('#timeSheetHistoryTable').attr('style', 'display:none;');
+            $('#timeSheetTable').attr('style', 'display:none;');
+            $('#timesheetHistoryDetails').attr('style', 'display:none;');
+        }
+    }
+    function loadPendingUsersSheets() {
+        xdialog.startSpin();
+        $.ajax({
+            type: "GET",
+            url: "/timesheet/GetHistory",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                if (data.length > 0) {
+                    $('#ddlTimeSheets').empty();
+                    $.each(data, function () {
+                        var fromDate = new Date(this.fromDate);
+                        var toDate = new Date(this.toDate);
+
+                        var text = "From " + fromDate.formatMMDDYYYY() + " To " + toDate.formatMMDDYYYY();
+                        $('#ddlTimeSheets').append($("<option></option>").val(this.id).html(text));
+                    });
+                    ddlSheetChange($('#ddlTimeSheets'));
+                    xdialog.stopSpin();
+                }
+                else {
+                    $('#timeSheetTable').attr('style', 'display:none;');
+                    $('#spNoTimesheet').attr('style', 'display:block;');
+                    xdialog.stopSpin();
+                }
+            },
+            failure: function (response) {
+                xdialog.stopSpin();
+                console.log(response);
+            }
+        });
+    }
+
+    function ddlSheetChange(ddlSheets) {
+        xdialog.startSpin();
+        $.ajax({
+            type: "GET",
+            url: "/timesheet/GetDetailsByTimeSheetId?timesheetId=" + $(ddlSheets).val(),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                if (data != "No date found!") {
+                    $('#spNoTimesheet').attr("style", "display:none;");
+                    $('#tsContainer').html('');
+                    var rowId = 1;
+                    if (data.length > 0) {
+                        $('#timeSheetTable').attr('style', 'display:block;')
+                        $('#spNoTimesheet').attr("style", "display:none;");
+                        $.each(data, function () {
+                            fillSheetRow(this, rowId);
+                            rowId += 1;
+                        });
+                        totalHours();
+                    }
+                    else {
+                        $('#timeSheetTable').attr('style', 'display:none;')
+                        $('#spNoTimesheet').attr("style", "display:block;");
+                    }
+                }
+                else {
+                    $('#spNoTimesheet').attr("style", "display:block;");
+                }
+                $.ajax({
+                    type: "GET",
+                    url: "/timesheet/GetApprovalTimeLine?timesheetId=" + $(ddlSheets).val(),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'html',
+                    success: function (data) {
+                        $('#timesheetDetails').html(data);
+                    }
+                });
+                xdialog.stopSpin();
+            },
+            failure: function (response) {
+                xdialog.stopSpin();
+                console.log(response);
+            }
+        });
+    }
+
+    function ddlSheetHistoryChange(ddlSheets) {
+        xdialog.startSpin();
+        $.ajax({
+            type: "GET",
+            url: "/timesheet/GetDetailsByTimeSheetId?timesheetId=" + $(ddlSheets).val(),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                if (data != "No date found!") {
+                    $('#tsContainerHistory').html('');
+                    var rowId = 1;
+                    if (data.length > 0) {
+                        $('#timeSheetHistoryTable').attr('style', 'display:block;')
+                        $.each(data, function () {
+                            fillSheetRowHistory(this, rowId);
+                            rowId += 1;
+                        });
+                        totalHoursHistory();
+                    }
+                    else {
+                        $('#timeSheetHistoryTable').attr('style', 'display:none;')
+                    }
+                }
+
+                $.ajax({
+                    type: "GET",
+                    url: "/timesheet/GetApprovalTimeLine?timesheetId=" + $(ddlSheets).val(),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'html',
+                    success: function (data) {
+                        $('#timesheetHistoryDetails').html(data);
+                    }
+                });
+                xdialog.stopSpin();
+            },
+            failure: function (response) {
+                xdialog.stopSpin();
+                console.log(response);
+            }
+        });
+    }
+
+    function fillSheetRowHistory(timesheetRow, rowId) {
+
+        var content = '<div id="row1" class="row tsRow" style="margin-bottom:36px"><div class="row" style="width:55%;margin-left:1px;margin-top:8px;"><div class="col-md-5"><div class="form-group"><div class="input-group" style="padding-top:6px"><select id="ddlPro1" onchange="ddlProjChange(this)" class="form-control select2bs4"><option>-- Select --</option></select></div></div></div><div class="col-md-5"><div class="form-group"><div class="input-group" style="padding-top:6px"><select id="ddlAct1" class="form-control select2bs4"><option>-- Select --</option></select></div></div></div><div class="row"><input id="txtComment1" class="form-control" placeholder="Comment" style="margin-left:30px;width:455px;"></div></div><div style="position:absolute;margin-left:50%"><div class="row ST"><div class="time-cell" style="padding-top:8px">ST</div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control sun" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control mon" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control tu" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control we" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control th" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control fri" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control sat" data-mask></div></div></div><div class="row OT"><div class="time-cell" style="padding-top:8px">OT</div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control sun" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control mon" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control tu" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control we" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control th" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control fri" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control sat" data-mask></div></div></div></div><div style="position:absolute;margin-left:96%;margin-top:44px"><i class="fas fa-trash" style="color:red;cursor:pointer;display:none;" onclick="deleteRow(this)"></i></div></div>';
+        content = content.replace("row1", "row" + rowId);
+        content = content.replace("ddlPro1", "ddlPro" + rowId);
+        content = content.replace("ddlAct1", "ddlAct" + rowId);
+        content = content.replace("txtComment1", "txtComment" + rowId);
+
+        $(content).appendTo($('#tsContainerHistory'));
+
+        if (timesheetRow.activity.type == 2) {
+            var projList = $('#tsContainerHistory').find('#ddlPro' + rowId);
+
+            $.ajax({
+                type: "GET",
+                url: "/project/GetProjects?userId=" + $('#ddlEmployeesHistoryTimeSheets').val(),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    projList.attr('isPro', 'true');
+                    projList.empty();
+                    $.each(data, function () {
+                        projList.append($("<option></option>").val(this.id).html(this.name));
+                    });
+                    projList.val(timesheetRow.activity.projectId);
+                    $.ajax({
+                        type: "GET",
+                        url: "/activity/GetProjectActivity?projectId=" + projList.val() + "&userId=" + $('#ddlEmployeesHistoryTimeSheets').val(),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            $('#tsContainerHistory').find("#ddlAct" + rowId).empty();
+                            $.each(data, function () {
+                                $('#tsContainerHistory').find("#ddlAct" + rowId).append($("<option></option>").val(this.id).html(this.name));
+                            });
+                            $('#tsContainerHistory').find('#ddlAct' + rowId).val(timesheetRow.activityId);
+                        },
+                        failure: function (response) {
+                            console.log(response);
+                        }
+                    });
+                },
+                failure: function (response) {
+                    console.log(response);
+                }
+            });
+
+        }
+        else {
+            var projList = $('#tsContainerHistory').find('#ddlPro' + rowId);
+            projList.attr('isPro', 'false');
+            projList.empty();
+            projList.append($("<option></option>").val('General').html('General Activities'));
+
+            $.ajax({
+                type: "GET",
+                url: "/Activity/GetGeneral",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $('#tsContainerHistory').find("#ddlAct" + rowId).empty();
+                    $.each(data, function () {
+                        $('#tsContainerHistory').find('#ddlAct' + rowId).append($("<option></option>").val(this.id).html(this.name));
+                    });
+                    $('#tsContainerHistory').find('#ddlAct' + rowId).val(timesheetRow.activityId);
+                },
+                failure: function (response) {
+                    console.log(response);
+                }
+            });
+        }
+
+        $('#tsContainerHistory').find('#txtComment' + rowId).val(timesheetRow.comments);
+
+        $('#tsContainerHistory').find('#row' + rowId + ' .ST .sun')[0].value = timesheetRow.sun == undefined ? "0" : timesheetRow.sun;
+        $('#tsContainerHistory').find('#row' + rowId + ' .ST .mon')[0].value = timesheetRow.mon == undefined ? "0" : timesheetRow.mon;
+        $('#tsContainerHistory').find('#row' + rowId + ' .ST .tu')[0].value = timesheetRow.tu == undefined ? "0" : timesheetRow.tu;
+        $('#tsContainerHistory').find('#row' + rowId + ' .ST .we')[0].value = timesheetRow.we == undefined ? "0" : timesheetRow.we;
+        $('#tsContainerHistory').find('#row' + rowId + ' .ST .th')[0].value = timesheetRow.th == undefined ? "0" : timesheetRow.th;
+        $('#tsContainerHistory').find('#row' + rowId + ' .ST .fri')[0].value = timesheetRow.fri == undefined ? "0" : timesheetRow.fri;
+        $('#tsContainerHistory').find('#row' + rowId + ' .ST .sat')[0].value = timesheetRow.sat == undefined ? "0" : timesheetRow.sat;
+
+
+        $('#tsContainerHistory').find('#row' + rowId + ' .OT .sun')[0].value = timesheetRow.sunOver == undefined ? "0" : timesheetRow.sunOver;
+        $('#tsContainerHistory').find('#row' + rowId + ' .OT .mon')[0].value = timesheetRow.monOver == undefined ? "0" : timesheetRow.monOver;
+        $('#tsContainerHistory').find('#row' + rowId + ' .OT .tu')[0].value = timesheetRow.tuOver == undefined ? "0" : timesheetRow.tuOver;
+        $('#tsContainerHistory').find('#row' + rowId + ' .OT .we')[0].value = timesheetRow.weOver == undefined ? "0" : timesheetRow.weOver;
+        $('#tsContainerHistory').find('#row' + rowId + ' .OT .th')[0].value = timesheetRow.thOver == undefined ? "0" : timesheetRow.thOver;
+        $('#tsContainerHistory').find('#row' + rowId + ' .OT .fri')[0].value = timesheetRow.friOver == undefined ? "0" : timesheetRow.friOver;
+        $('#tsContainerHistory').find('#row' + rowId + ' .OT .sat')[0].value = timesheetRow.satOver == undefined ? "0" : timesheetRow.satOver;
+
+        $('#tsContainerHistory').find('.ST input').on('change', function () { totalHoursHistory(); });
+        $('#tsContainerHistory').find('.OT input').on('change', function () { totalHoursHistory(); });
+
+        $('#tsContainerHistory input').each(function () {
+            $(this).attr('readonly', 'readonly');
+        });
+
+        $('#tsContainerHistory select').each(function () {
+            $(this).attr('readonly', 'readonly');
+        });
+
+        $('.row .OT').attr('style', 'display: none;');
+        $('.ST .input-group .fri').each(function () {
+            $(this).prop("readonly", true);
+            $(this).prop("disabled", true);
+            $(this).attr("style", "display:none;");
+
+        });
+        $('.ST .input-group .sat').each(function () {
+            $(this).prop("readonly", true);
+            $(this).prop("disabled", true);
+            $(this).attr("style", "display:none;");
+        });
+    }
+
+    function fillSheetRow(timesheetRow, rowId) {
+
+        var content = '<div id="row1" class="row tsRow" style="margin-bottom:36px"><div class="row" style="width:55%;margin-left:1px;margin-top:8px;"><div class="col-md-5"><div class="form-group"><div class="input-group" style="padding-top:6px"><select id="ddlPro1" onchange="ddlProjChange(this)" class="form-control select2bs4"><option>-- Select --</option></select></div></div></div><div class="col-md-5"><div class="form-group"><div class="input-group" style="padding-top:6px"><select id="ddlAct1" class="form-control select2bs4"><option>-- Select --</option></select></div></div></div><div class="row"><input id="txtComment1" class="form-control" placeholder="Comment" style="margin-left:30px;width:455px;"></div></div><div style="position:absolute;margin-left:50%"><div class="row ST"><div class="time-cell" style="padding-top:8px">ST</div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control sun" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control mon" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control tu" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control we" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control th" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control fri" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control sat" data-mask></div></div></div><div class="row OT"><div class="time-cell" style="padding-top:8px">OT</div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control sun" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control mon" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control tu" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control we" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control th" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control fri" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control sat" data-mask></div></div></div></div><div style="position:absolute;margin-left:96%;margin-top:44px"><i class="fas fa-trash" style="color:red;cursor:pointer;display:none;" onclick="deleteRow(this)"></i></div></div>';
+        content = content.replace("row1", "row" + rowId);
+        content = content.replace("ddlPro1", "ddlPro" + rowId);
+        content = content.replace("ddlAct1", "ddlAct" + rowId);
+        content = content.replace("txtComment1", "txtComment" + rowId);
+
+        $(content).appendTo($('#tsContainer'));
+
+        if (timesheetRow.activity.type == 2) {
+            var projList = $('#ddlPro' + rowId);
+
+            $.ajax({
+                type: "GET",
+                url: "/project/GetUserProjects",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    projList.attr('isPro', 'true');
+                    projList.empty();
+                    $.each(data, function () {
+                        projList.append($("<option></option>").val(this.id).html(this.name));
+                    });
+                    projList.val(timesheetRow.activity.projectId);
+                    $.ajax({
+                        type: "GET",
+                        url: "/activity/GetProjectActivity?projectId=" + projList.val() + "&userId=" + $('#ddlEmployeesTimeSheets').val(),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            $("#ddlAct" + rowId).empty();
+                            $.each(data, function () {
+                                $("#ddlAct" + rowId).append($("<option></option>").val(this.id).html(this.name));
+                            });
+                            $('#ddlAct' + rowId).val(timesheetRow.activityId);
+                        },
+                        failure: function (response) {
+                            console.log(response);
+                        }
+                    });
+                },
+                failure: function (response) {
+                    console.log(response);
+                }
+            });
+
+        }
+        else {
+            var projList = $('#ddlPro' + rowId);
+            projList.attr('isPro', 'false');
+            projList.empty();
+            projList.append($("<option></option>").val('General').html('General Activities'));
+
+            $.ajax({
+                type: "GET",
+                url: "/Activity/GetGeneral",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $("#ddlAct" + rowId).empty();
+                    $.each(data, function () {
+                        $('#ddlAct' + rowId).append($("<option></option>").val(this.id).html(this.name));
+                    });
+                    $('#ddlAct' + rowId).val(timesheetRow.activityId);
+                },
+                failure: function (response) {
+                    console.log(response);
+                }
+            });
+        }
+
+        $('#txtComment' + rowId).val(timesheetRow.comments);
+
+        $('#row' + rowId + ' .ST .sun')[0].value = timesheetRow.sun == undefined ? "0" : timesheetRow.sun;
+        $('#row' + rowId + ' .ST .mon')[0].value = timesheetRow.mon == undefined ? "0" : timesheetRow.mon;
+        $('#row' + rowId + ' .ST .tu')[0].value = timesheetRow.tu == undefined ? "0" : timesheetRow.tu;
+        $('#row' + rowId + ' .ST .we')[0].value = timesheetRow.we == undefined ? "0" : timesheetRow.we;
+        $('#row' + rowId + ' .ST .th')[0].value = timesheetRow.th == undefined ? "0" : timesheetRow.th;
+        $('#row' + rowId + ' .ST .fri')[0].value = timesheetRow.fri == undefined ? "0" : timesheetRow.fri;
+        $('#row' + rowId + ' .ST .sat')[0].value = timesheetRow.sat == undefined ? "0" : timesheetRow.sat;
+
+
+        $('#row' + rowId + ' .OT .sun')[0].value = timesheetRow.sunOver == undefined ? "0" : timesheetRow.sunOver;
+        $('#row' + rowId + ' .OT .mon')[0].value = timesheetRow.monOver == undefined ? "0" : timesheetRow.monOver;
+        $('#row' + rowId + ' .OT .tu')[0].value = timesheetRow.tuOver == undefined ? "0" : timesheetRow.tuOver;
+        $('#row' + rowId + ' .OT .we')[0].value = timesheetRow.weOver == undefined ? "0" : timesheetRow.weOver;
+        $('#row' + rowId + ' .OT .th')[0].value = timesheetRow.thOver == undefined ? "0" : timesheetRow.thOver;
+        $('#row' + rowId + ' .OT .fri')[0].value = timesheetRow.friOver == undefined ? "0" : timesheetRow.friOver;
+        $('#row' + rowId + ' .OT .sat')[0].value = timesheetRow.satOver == undefined ? "0" : timesheetRow.satOver;
+
+        $('.ST input').on('change', function () { totalHours(); });
+        $('.OT input').on('change', function () { totalHours(); });
+
+        $('#tsContainer input').each(function () {
+            $(this).attr('readonly', 'readonly');
+        });
+
+        $('#tsContainer select').each(function () {
+            $(this).attr('readonly', 'readonly');
+        });
+
+        $('.row .OT').attr('style', 'display: none;');
+        $('.ST .input-group .fri').each(function () {
+            $(this).prop("readonly", true);
+            $(this).prop("disabled", true);
+            $(this).attr("style", "display:none;");
+
+        });
+        $('.ST .input-group .sat').each(function () {
+            $(this).prop("readonly", true);
+            $(this).prop("disabled", true);
+            $(this).attr("style", "display:none;");
+        });
+    }
+
+    function getProjects(ddlProj, isProject) {
+
+        if (isProject) {
+            var projList = $('#' + ddlProj);
+
+            $.ajax({
+                type: "GET",
+                url: "/project/GetProjects?userId=" + $('#ddlEmployeesTimeSheets').val(),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    projList.attr('isPro', 'true');
+                    projList.empty();
+                    $.each(data, function () {
+                        projList.append($("<option></option>").val(this.id).html(this.name));
+                    });
+                    ddlProjChange($('#' + ddlProj)[0]);
+                },
+                failure: function (response) {
+                    console.log(response);
+                }
+            });
+
+        }
+        else {
+            var projList = $('#' + ddlProj);
+            projList.attr('isPro', 'false');
+            projList.empty();
+            projList.append($("<option></option>").val('General').html('General Activities'));
+
+            var rowNumber = ddlProj.replace('ddlPro', '');
+
+            $.ajax({
+                type: "GET",
+                url: "/Activity/GetGeneral",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $("#ddlAct" + rowNumber).empty();
+                    $.each(data, function () {
+                        $('#ddlAct' + rowNumber).append($("<option></option>").val(this.id).html(this.name));
+                    });
+                },
+                failure: function (response) {
+                    console.log(response);
+                }
+            });
+
+        }
+
+    }
+
+    function ddlProjChange(ddlProj) {
+
+        var rowNumber = ddlProj.id.replace('ddlPro', '');
+
+        if ($(ddlProj).attr('isPro') == 'true') {
+            $.ajax({
+                type: "GET",
+                url: "/activity/GetProjectActivity?projectId=" + $(ddlProj).val() + "&userId=" + $('#ddlEmployeesTimeSheets').val(),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $("#ddlAct" + rowNumber).empty();
+                    $.each(data, function () {
+                        $("#ddlAct" + rowNumber).append($("<option></option>").val(this.id).html(this.name));
+                    });
+                },
+                failure: function (response) {
+                    console.log(response);
+                }
+            });
+        }
+    }
+
+    function approveTimeSheet() {
+        xdialog.startSpin();
+        var currentProject = $('#ddlProjects').val();
+        $.ajax({
+            type: "GET",
+            url: "/timesheet/ApproveTimeSheet?managerId=" + managerId + "&timesheetId=" + $('#ddlTimeSheets').val() + "&isApproved=true&comments=" + "comments approve",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                xdialog.stopSpin();
+                xdialog.open({
+                    title: 'Information',
+                    body: 'Time sheet has been approved.',
+                    buttons: ['ok'],
+                    style: 'min-width:38em;',
+                    onok: function (param) {
+                    }
+                });
+                projectChange($('#ddlProjects'));
+                $('#ddlProjects').val(currentProject);
+            },
+            failure: function (response) {
+                console.log(response);
+            }
+        });
+    }
+
+    function addRejectComment() {
+        xdialog.startSpin();
+        var isValid = true;
+        if ($('#inpComment').val().trim() == '') {
+            $('#errComment').attr('style', 'display:block;color:red;');
+            isValid = false;
+        }
+
+        if (isValid) {
+            var currentProject = $('#ddlProjects').val();
+
+            $.ajax({
+                type: "GET",
+                url: "/timesheet/ApproveTimeSheet?managerId=" + managerId + "&timesheetId=" + $('#ddlTimeSheets').val() + "&isApproved=false&comments=" + $('#inpComment').val(),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    xdialog.stopSpin();
+                    $('#addComments').modal('hide');
+                    xdialog.open({
+                        title: 'Information',
+                        body: 'Time sheet rejected.',
+                        buttons: ['ok'],
+                        style: 'min-width:38em;',
+                        onok: function (param) {
+                        }
+                    });
+                    projectChange($('#ddlProjects'));
+                    $('#ddlProjects').val(currentProject);
+                },
+                failure: function (response) {
+                    console.log(response);
+                }
+            });
+        }
+    }
+
+    function rejectTimeSheet() {
+        $('#addComments').modal('show');
+    }
+
+    Date.prototype.formatMMDDYYYY = function () {
+        return this.getDate() +
+            "-" + (this.getMonth() + 1) +
+            "-" + this.getFullYear();
+    }
+
+    function validateHours(evt) {
+        return digitKeyOnly(evt);
+    }
+
+    function digitKeyOnly(e) {
+        var keyCode = e.keyCode == 0 ? e.charCode : e.keyCode;
+        var value = Number(e.key);
+
+        if ((keyCode >= 37 && keyCode <= 40) || (keyCode == 8 || keyCode == 9 || keyCode == 13) || (keyCode >= 48 && keyCode <= 57)) {
+            var isValidDigit = isValidNumber(value);
+            if (e.target.value > 9) {
+                isValidDigit = false;
+            }
+
+            var total = 0;
+
+            $('.ST .' + $(e.target).attr('class').split(' ')[1]).each(function () {
+                if (this != e.target) {
+                    total += Number($(this).val());
+                }
+            });
+            if (isValidDigit) {
+                if ($(e.target).parents('.OT').length == 0) {
+                    total += value;
+                    if (total > 9) {
+                        e.target.preventDefault;
+                        isValidDigit = false;
+                        xdialog.open({
+                            title: 'Validation error',
+                            body: 'Standartd time not exceed 9 hours!',
+                            buttons: ['ok'],
+                            style: 'min-width:38em;',
+                            onok: function (param) {
+                            }
+                        });
+                    }
+                    else {
+                        isValidDigit = true;
+                    }
+                }
+            }
+            return isValidDigit;
+        }
+        return false;
+    }
+
+    function isValidNumber(number) {
+        return (1 <= number && number <= 9)
+    }
+
+    function totalHoursHistory() {
+        var total = 0;
+        $('#tsContainerHistory').find('.ST .sun').each(function () {
+            total += Number($(this).val());
+        });
+        $('#tsContainerHistory').find('.OT .sun').each(function () {
+            total += Number($(this).val());
+        });
+        $('#timeSheetHistoryTable').find('.sunTotal').val(total);
+        $('#timeSheetHistoryTable').find('.sunTotal').attr('style', 'font-weight:bold;');
+
+        var total = 0;
+        $('#tsContainerHistory').find('.ST .mon').each(function () {
+            total += Number($(this).val());
+        });
+        $('#tsContainerHistory').find('.OT .mon').each(function () {
+            total += Number($(this).val());
+        });
+        $('#timeSheetHistoryTable').find('.monTotal').val(total);
+        $('#timeSheetHistoryTable').find('.monTotal').attr('style', 'font-weight:bold;');
+
+        var total = 0;
+        $('#tsContainerHistory').find('.ST .tu').each(function () {
+            total += Number($(this).val());
+        });
+        $('#tsContainerHistory').find('.OT .tu').each(function () {
+            total += Number($(this).val());
+        });
+        $('#timeSheetHistoryTable').find('.tuTotal').val(total);
+        $('#timeSheetHistoryTable').find('.tuTotal').attr('style', 'font-weight:bold;');
+
+        var total = 0;
+        $('#tsContainerHistory').find('.ST .we').each(function () {
+            total += Number($(this).val());
+        });
+        $('#tsContainerHistory').find('.OT .we').each(function () {
+            total += Number($(this).val());
+        });
+        $('#timeSheetHistoryTable').find('.weTotal').val(total);
+        $('#timeSheetHistoryTable').find('.weTotal').attr('style', 'font-weight:bold;');
+
+
+        var total = 0;
+        $('#tsContainerHistory').find('.ST .th').each(function () {
+            total += Number($(this).val());
+        });
+        $('#tsContainerHistory').find('.OT .th').each(function () {
+            total += Number($(this).val());
+        });
+        $('#timeSheetHistoryTable').find('.thTotal').val(total);
+        $('#timeSheetHistoryTable').find('.thTotal').attr('style', 'font-weight:bold;');
+
+        var total = 0;
+        $('#tsContainerHistory').find('.ST .fri').each(function () {
+            total += Number($(this).val());
+        });
+        $('#tsContainerHistory').find('.OT .fri').each(function () {
+            total += Number($(this).val());
+        });
+        $('#timeSheetHistoryTable').find('.friTotal').val(total);
+        $('#timeSheetHistoryTable').find('.friTotal').attr('style', 'font-weight:bold;');
+
+        var total = 0;
+        $('#tsContainerHistory').find('.ST .sat').each(function () {
+            total += Number($(this).val());
+        });
+        $('#tsContainerHistory').find('.OT .sat').each(function () {
+            total += Number($(this).val());
+        });
+        $('#timeSheetHistoryTable').find('.satTotal').val(total);
+        $('#timeSheetHistoryTable').find('.satTotal').attr('style', 'font-weight:bold;');
+
+    }
+
+    function totalHours() {
+        var total = 0;
+        $('#tsContainer').find('.ST .sun').each(function () {
+            total += Number($(this).val());
+        });
+        $('#tsContainer').find('.OT .sun').each(function () {
+            total += Number($(this).val());
+        });
+        $('#timeSheetTable').find('.sunTotal').val(total);
+        $('#timeSheetTable').find('.sunTotal').attr('style', 'font-weight:bold;');
+
+        var total = 0;
+        $('#tsContainer').find('.ST .mon').each(function () {
+            total += Number($(this).val());
+        });
+        $('#tsContainer').find('.OT .mon').each(function () {
+            total += Number($(this).val());
+        });
+        $('#timeSheetTable').find('.monTotal').val(total);
+        $('#timeSheetTable').find('.monTotal').attr('style', 'font-weight:bold;');
+
+        var total = 0;
+        $('#tsContainer').find('.ST .tu').each(function () {
+            total += Number($(this).val());
+        });
+        $('#tsContainer').find('.OT .tu').each(function () {
+            total += Number($(this).val());
+        });
+        $('#timeSheetTable').find('.tuTotal').val(total);
+        $('#timeSheetTable').find('.tuTotal').attr('style', 'font-weight:bold;');
+
+        var total = 0;
+        $('#tsContainer').find('.ST .we').each(function () {
+            total += Number($(this).val());
+        });
+        $('#tsContainer').find('.OT .we').each(function () {
+            total += Number($(this).val());
+        });
+        $('#timeSheetTable').find('.weTotal').val(total);
+        $('#timeSheetTable').find('.weTotal').attr('style', 'font-weight:bold;');
+
+
+        var total = 0;
+        $('#tsContainer').find('.ST .th').each(function () {
+            total += Number($(this).val());
+        });
+        $('#tsContainer').find('.OT .th').each(function () {
+            total += Number($(this).val());
+        });
+        $('#timeSheetTable').find('.thTotal').val(total);
+        $('#timeSheetTable').find('.thTotal').attr('style', 'font-weight:bold;');
+
+        var total = 0;
+        $('#tsContainer').find('.ST .fri').each(function () {
+            total += Number($(this).val());
+        });
+        $('#tsContainer').find('.OT .fri').each(function () {
+            total += Number($(this).val());
+        });
+        $('#timeSheetTable').find('.friTotal').val(total);
+        $('#timeSheetTable').find('.friTotal').attr('style', 'font-weight:bold;');
+
+        var total = 0;
+        $('#tsContainer').find('.ST .sat').each(function () {
+            total += Number($(this).val());
+        });
+        $('#tsContainer').find('.OT .sat').each(function () {
+            total += Number($(this).val());
+        });
+        $('#timeSheetTable').find('.satTotal').val(total);
+        $('#timeSheetTable').find('.satTotal').attr('style', 'font-weight:bold;');
+
+    }
+</script>
+
+<style>
+    .dataTables_wrapper {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+
+    .dataTables_length {
+        margin-top: 20px;
+        margin-left: 10px;
+    }
+
+    .dataTables_filter {
+        margin-top: 20px;
+        margin-right: 20px;
+    }
+
+    .dataTables_info {
+        margin-left: 10px;
+    }
+
+    .select2-selection.select2-selection--single {
+        height: 38px !important;
+    }
+</style>
+
+
+<style>
+    .time-cell {
+        width: 58px;
+        margin: 10px 10px 10px 10px;
+    }
+
+    .time-cell-total {
+        width: 58px;
+        margin: 10px 10px 10px 10px;
+    }
+
+    .seper {
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    span.select2.select2-container.select2-container--default {
+        width: 100% !important;
+    }
+    label.btn.btn-success.toggle-on {
+        width: 65px;
+    }
+
+    label.btn.btn-danger.active.toggle-off {
+        width: 60px;
+        padding-left: 10px!important;
+    }
+</style>

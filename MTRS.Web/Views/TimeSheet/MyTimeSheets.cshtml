@@ -1,0 +1,333 @@
+﻿
+<section class="content">
+    <div class="container-fluid">
+        <div id="tablePanel">
+            <div class="row" style="margin-left: 2px;">
+                <div>
+                    <br />
+                    <h5>Pending Timesheets</h5>
+                    <br />
+                </div>
+                <div style="float: right; margin-left: 790px;">
+                    <button type="button" onclick="newTimeSheet();" class="btn btn-primary btn-block" style="margin-right:20px;margin-top:20px; margin-bottom:20px; width: 140px;">Add Timesheet</button>
+                </div>
+                <!-- /.col -->
+            </div>
+            <div class="row" style="background-color: white; margin-left: 2px;">
+                <table id="myDataTable" class="display" style="width:98%;margin: 10px 10px 10px 10px;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Timesheet Period</th>
+                            <th>Total Hours</th>
+                            <th>Status</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tablePanelHistory">
+            <div class="row" style="margin-left: 2px;">
+                <div>
+                    <br />
+                    <h5>Completed Timesheets</h5>
+                    <br />
+                </div>
+                <!-- /.col -->
+            </div>
+            <div class="row" style="background-color: white; margin-left: 2px;">
+                <table id="myDataTableHistory" class="display" style="width:98%;margin: 10px 10px 10px 10px;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Timesheet Period</th>
+                            <th>Total Hours</th>
+                            <th>Status</th>
+                            <th>View</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="addSheet" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" style="width: 350px;">
+            <div class="modal-header">
+                <h4 class="modal-title">Add Timesheet</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card-body">
+                    <div class="row" style="width: 300px;">
+                        <div style="width:300px;">
+                            <div class="form-group">
+                                <label>Start Date<span style="color:red;">*</span></label>
+                                <div class="input-group">
+                                    <input type="text" id="inpStartDate" style="z-index:999999;" class="form-control" data-mask />
+                                </div>
+                                <div class="row" style="margin-left: 3px;">
+                                    <span id="errStartDate" style="color:red;display:none;">Date is required</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <!-- /.row -->
+                <div class="row">
+                    <div class="col-4">
+                        <button type="button" onclick="addTimeSheet();" class="btn btn-primary btn-block" style="width:80px;margin-top:20px;">Add</button>
+                    </div>
+                    <!-- /.col -->
+                </div>
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
+
+<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/flick/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+
+<!-- Select2 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.4.1/flatly/bootstrap.min.css">
+<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+<script src="~/plugins/select2/js/select2.full.min.js"></script>
+
+<link rel="stylesheet" href="http://cdn.jsdelivr.net/gh/xxjapp/xdialog@3/xdialog.min.css">
+<script src="http://cdn.jsdelivr.net/gh/xxjapp/xdialog@3/xdialog.min.js"></script>
+
+<script type="text/javascript">
+
+    function loadPendingSheets() {
+        var table = $('#myDataTable').DataTable();
+        table.destroy();
+
+        $('#myDataTable').dataTable({
+            ajax: {
+                url: '/timesheet/GetPendingTimeSheets',
+                dataSrc: ''
+            },
+            columns: [
+                { data: 'id' },
+                {
+                    data: 'fromDate',
+                    render: function (data, type, row, meta) {
+                        return new Date(row.fromDate).formatMMDDYYYY() + ' To ' + new Date(row.toDate).formatMMDDYYYY();
+                    }
+                },
+                { data: 'totalHours' },
+                {
+                    data: 'statusId',
+                    render: function (data, type, row, meta) {
+                        if (data == '1') {
+                            return 'Draft';
+                        }
+                        else if (data == '4') {
+                            return 'Partially Rejected';
+                        }
+                    }
+                },
+                {
+                    data: null,
+                    className: "dt-center editor-edit",
+                    defaultContent: '<i class="fas fa-edit" style="color:#0062cc;cursor: pointer;"></i>',
+                    orderable: false
+                },
+            ],
+            "columnDefs": [
+                {
+                    "targets": [0],
+                    "visible": false,
+                    "searchable": false
+                }
+            ]
+        });
+    }
+
+    $(document).ready(function () {
+        $("#inpStartDate").datepicker({
+            beforeShowDay: function (date) {
+                return [date.getDay() === 0, ''];
+            }
+        });
+
+        $("#inpStartDate").keydown(function (event) {
+            event.preventDefault();
+        });
+
+        loadPendingSheets();
+
+        var table = $('#myDataTableHistory').DataTable();
+        table.destroy();
+
+        $('#myDataTableHistory').dataTable({
+            ajax: {
+                url: '/timesheet/GetHistory',
+                dataSrc: ''
+            },
+            columns: [
+                { data: 'id' },
+                {
+                    data: 'fromDate',
+                    render: function (data, type, row, meta) {
+                        return new Date(row.fromDate).formatMMDDYYYY() + ' To ' + new Date(row.toDate).formatMMDDYYYY();
+                    }
+                },
+                { data: 'totalHours' },
+                {
+                    data: 'statusId',
+                    render: function (data, type, row, meta) {
+                        if (data == '1') {
+                            return 'Draft';
+                        }
+                        else if (data == '4') {
+                            return 'Rejected';
+                        }
+                        else if (data == '3') {
+                            return 'Approved';
+                        }
+                        else if (data == '5') {
+                            return 'Pending Approval';
+                        }
+                        else if (data == '2') {
+                            return 'Pending Approval';
+                        }
+
+                    }
+                },
+                {
+                    data: null,
+                    className: "dt-center editor-edit",
+                    defaultContent: '<i class="far fa-eye" style="color:#0062cc;cursor: pointer;"></i>',
+                    orderable: false
+                },
+            ],
+            "columnDefs": [
+                {
+                    "targets": [0],
+                    "visible": false,
+                    "searchable": false
+                }
+            ],
+            "order": [[0, "desc"]]
+        });
+    });
+
+    function newTimeSheet() {
+        $('#addSheet').modal('show');
+    };
+
+    function addTimeSheet() {
+
+        var startDate = new Date($('#inpStartDate').val().replace('/', '-')).toISOString();
+        var startDateUTC = new Date(startDate);
+        startDateUTC.setDate(startDateUTC.getDate() + 1);
+
+        var timesheet = {
+            fromDate: startDateUTC
+        };
+
+        console.log(timesheet);
+
+        xdialog.startSpin();
+        $.ajax({
+            type: "POST",
+            url: "/timesheet/addtimesheet",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(timesheet),
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                if (data.toString() == 'true') {
+                    $('#addSheet').modal('hide');
+                    xdialog.stopSpin();
+                    loadPendingSheets();
+                }
+                else {
+                    xdialog.stopSpin();
+                    xdialog.open({
+                        title: 'Error',
+                        body: 'Timesheet already exist.',
+                        buttons: ['ok'],
+                        style: 'min-width:38em;',
+                        onok: function (param) {
+                        }
+                    });
+                }
+            },
+            failure: function (response) {
+                xdialog.stopSpin();
+                console.log(response);
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        $('body').on('click', '.fa-edit', function () {
+            var currentRow = $(this).closest("tr");
+
+            var data = $('#myDataTable').DataTable().row(currentRow).data();
+            window.location = '/timesheet/index?id=' + data['id'];
+        });
+    });
+
+    $(document).ready(function () {
+        $('#myDataTableHistory').on('click', '.fa-eye', function () {
+            var currentRow = $(this).closest("tr");
+
+            var data = $('#myDataTableHistory').DataTable().row(currentRow).data();
+            window.location = '/timesheet/UserTimeSheetHistory?id=' + data['id'];
+        });
+    });
+
+    Date.prototype.formatMMDDYYYY = function () {
+        return this.getDate() +
+            "-" + (this.getMonth() + 1) +
+            "-" + this.getFullYear();
+    }
+</script>
+
+<style>
+    .dataTables_wrapper {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+
+    .dataTables_length {
+        margin-top: 20px;
+        margin-left: 10px;
+    }
+
+    .dataTables_filter {
+        margin-top: 20px;
+        margin-right: 20px;
+    }
+
+    .dataTables_info {
+        margin-left: 10px;
+    }
+</style>

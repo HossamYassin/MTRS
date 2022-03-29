@@ -1,0 +1,169 @@
+﻿<section class="content">
+    <div class="container-fluid">
+        <div id="tablePanel">
+            <div class="row" style="margin-left: 2px;">
+                <div>
+                    <br />
+                    <h5>Current Projects</h5>
+                    <br />
+                </div>
+                <!-- /.col -->
+            </div>
+            <div class="row" style="margin-left: 2px;">
+                <div id="tableCurrentProjects" style="width:98%;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <h3 class="card-title" style="margin-left:10px;font-weight:bold;">Projects</h3>
+                                <div class='row' style='width: 100%;font-weight: bold;'>
+                                    <div style='margin-left:160px;width:140px;'>Activity</div>
+                                    <div style='width:110px;margin-left:80px;'>Start Date</div>
+                                    <div style='width:110px;margin-left:80px;'>End Date</div>
+                                    <div style='width:100px;margin-left:75px;'>
+                                        Planned Hours
+                                    </div>
+                                    <div style='width:100px;margin-left:40px;'>
+                                        Logged Hours
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ./card-header -->
+                        <div id="treeContainer" class="card-body p-0">
+                            <div id="projectsTree"></div>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" style="margin-left: 2px;">
+                <div>
+                    <br />
+                    <h5>Completed Projects</h5>
+                    <br />
+                </div>
+                <!-- /.col -->
+            </div>
+            <div class="row" style="margin-left: 2px;">
+                <div id="tableCompletedProjects" style="width:98%;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <h3 class="card-title" style="margin-left:10px;font-weight:bold;">Projects</h3>
+                                <div class='row' style='width: 100%;font-weight: bold;'>
+                                    <div style='margin-left:160px;width:140px;'>Activity</div>
+                                    <div style='width:110px;margin-left:80px;'>Start Date</div>
+                                    <div style='width:110px;margin-left:80px;'>End Date</div>
+                                    <div style='width:100px;margin-left:75px;'>
+                                        Planned Hours
+                                    </div>
+                                    <div style='width:100px;margin-left:40px;'>
+                                        Logged Hours
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ./card-header -->
+                        <div id="treeContainer" class="card-body p-0">
+                            <div id="projectsCompletedTree"></div>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
+
+<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/flick/jquery-ui.css">
+<link href="https://jonmiles.github.io/bootstrap-treeview/css/bootstrap-treeview.css" rel="stylesheet">
+
+<!-- Select2 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.4.1/flatly/bootstrap.min.css">
+<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+@*<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>*@
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+
+@*<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>*@
+<script src="~/plugins/select2/js/select2.full.min.js"></script>
+<script src="~/js/bstreeview.min.js"></script>
+
+<link rel="stylesheet" href="http://cdn.jsdelivr.net/gh/xxjapp/xdialog@3/xdialog.min.css">
+<script src="http://cdn.jsdelivr.net/gh/xxjapp/xdialog@3/xdialog.min.js"></script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        xdialog.startSpin();
+
+        $.ajax({
+            type: "GET",
+            url: "/project/getactiveprojects?isActive=true",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                employees = data;
+                $('#projectsTree').html('');
+                $('#projectsTree').bstreeview({ data: JSON.stringify(data) });
+                xdialog.stopSpin();
+            },
+            failure: function (response) {
+                console.log(response);
+            }
+        });
+
+        xdialog.startSpin();
+        $.ajax({
+            type: "GET",
+            url: "/project/getactiveprojects?isActive=false",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                employees = data;
+                $('#projectsCompletedTree').html('');
+                $('#projectsCompletedTree').bstreeview({ data: JSON.stringify(data) });
+                xdialog.stopSpin();
+            },
+            failure: function (response) {
+                console.log(response);
+            }
+        });
+    });
+
+    function viewProject(id) {
+        window.location.href = "/project?id=" + id;
+    }
+</script>
+
+<style>
+
+    span.select2.select2-container.select2-container--default {
+        width: 100% !important;
+    }
+
+    i.state-icon.fa.fa-angle-right {
+        margin-right: 10px;
+    }
+
+    i.item-icon.fas.fa-project-diagram {
+        margin-right: 10px;
+    }
+
+    i.state-icon.fa-angle-down.fa {
+        margin-right: 10px;
+    }
+</style>

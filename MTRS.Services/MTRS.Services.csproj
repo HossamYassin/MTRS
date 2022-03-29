@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Interfaces\IProjectService.cs~RF202f7aa.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MTRS.Core\MTRS.Core.csproj" />
+    <ProjectReference Include="..\MTRS.DAL\MTRS.DAL.csproj" />
+  </ItemGroup>
+
+</Project>

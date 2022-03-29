@@ -1,0 +1,120 @@
+﻿<div class="row" style="margin-top:20px;margin-left:5px;margin-bottom:30px;width:800px">
+    <div class="col-md-6" style="width:250px;">
+        @if (ViewBag.TimeSheet.SubmitedOn != null)
+        {
+            <div class="row" style="width:90%;font-weight: 700;">
+                Submitted Date: @ViewBag.TimeSheet.SubmitedOn.ToString("dd/MM/yyyy")
+            </div>
+        }
+    </div>
+    <div class="col-md-6" style="width:200px;">
+        @if (@ViewBag.Status.ToString() == "Approved")
+        {
+            <div id="status" class="row" style="width:80%;font-weight: 700;">
+                Current Status: Approved
+            </div>
+        }
+        else if (@ViewBag.Status.ToString() == "Rejected")
+        {
+            <div id="status" class="row" style="width:80%;font-weight: 700;">
+                Current Status: Partially Rejected
+            </div>
+        }
+        else if (@ViewBag.Status.ToString() == "Submited")
+        {
+            bool isApproved = false; 
+            @foreach (var approval in ViewBag.Approvals)
+            {
+                @if (@approval.Status.ToString() == "Approved")
+                {
+                    <div id="status" class="row" style="width:80%;font-weight: 700;">
+                        Current Status: Partially Approved
+                    </div>
+
+                    isApproved = true;
+                    break;
+                }
+            }
+            @if(isApproved == false) 
+            {
+                <div id="status" class="row" style="width:80%;font-weight: 700;">
+                    Current Status: Submitted
+                </div>
+            }
+        }
+        else if (@ViewBag.Status.ToString() == "Resubmited")
+        {
+            <div id="status" class="row" style="width:80%;font-weight: 700;">
+                Current Status: Resubmitted
+            </div>
+        }
+    </div>
+</div>
+
+<div id="timelines" class="timeline">
+    @foreach (var approval in ViewBag.Approvals)
+    {
+        @if (@approval.Status.ToString() != "Submited" || @approval.Status.ToString() == "Draft")
+        {
+            <div class="time-label">
+                <span class="bg-green">@approval.TransactionDate.ToString("dd/MM/yyyy")</span>
+            </div>
+        }
+        @if (@approval.Status.ToString() == "Approved")
+        {
+            <div>
+                <i class="fas fa-user bg-green"></i>
+                <div class="timeline-item">
+                    <h3 class="timeline-header no-border">
+                        @approval.Manager.FirstName @approval.Manager.LastName approved your timesheet.
+                    </h3>
+
+                </div>
+            </div>
+        }
+        else if (@approval.Status.ToString() == "Rejected")
+        {
+            <div>
+                <i class="fas fa-user bg-red"></i>
+                <div class="timeline-item">
+                    <h3 class="timeline-header no-border">
+                        @approval.Manager.FirstName @approval.Manager.LastName rejected your timesheet.
+                        @if (!String.IsNullOrEmpty(approval.Comments))
+                        {
+                            <br /> <br />
+                            <span style="margin-top:8px;">Comments: @approval.Comments</span>
+                        }
+                    </h3>
+                </div>
+            </div>
+        }
+        else if (@approval.Status.ToString() == "Resubmited")
+        {
+            <div>
+                <i class="fas fa-user bg-green"></i>
+                <div class="timeline-item">
+                    <h3 class="timeline-header no-border">
+                        Timesheet resubmitted.
+                    </h3>
+                </div>
+            </div>
+        }
+    }
+    @if (ViewBag.Approvals.Count > 0)
+    {
+        <div>
+            <i class="fas fa-clock bg-gray"></i>
+        </div>
+    }
+</div>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ($('.time-label').length == 0) {
+            $('#timelines').attr('style', 'display:none;')
+        }
+    });
+
+</script>

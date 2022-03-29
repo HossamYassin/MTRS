@@ -1,0 +1,599 @@
+﻿<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"> <a style="color:black;" href="/timesheet/mytimesheets">My Timesheets</a></li>
+                    <li class="breadcrumb-item active">Timesheets History</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">Timesheet History</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <select id="ddlTimeSheets" onchange="ddlSheetChange(this);" class="form-control select2bs4">
+                                    </select>
+                                </div>
+                                <div class="row" style="margin-left: 8px;margin-top:10px;font-weight:bold;">
+                                    <span id="spNoTimesheet" class="alert alert-danger" style="display:none;">There are no timesheets.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div id="timesheetDetails">
+                        </div>
+                    </div>
+                </div>
+                <div id="timeSheetTable" style="display:none;">
+                    <div class="row" style="background-color: darkseagreen;margin-top: 20px;margin-bottom:20px;">
+                        <div class="col-md-2">
+                            <div class="input-group">
+                                <label style="margin-top:10px;">Project</label>
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-2">
+                            <div class="input-group">
+                                <label style="margin-top:10px;margin-left: 72px;">Activity</label>
+                            </div>
+                        </div>
+                        <div style="position: absolute;margin-left: 50%;">
+                            <div class="row" style=" width: 700px;">
+                                <div class="time-cell">
+
+                                </div>
+                                <div class="time-cell">
+                                    <div class="input-group">
+                                        <label>Sun</label>
+                                    </div>
+                                </div>
+                                <div class="time-cell">
+                                    <div class="input-group">
+                                        <label>Mon</label>
+                                    </div>
+                                </div>
+                                <div class="time-cell">
+                                    <div class="input-group">
+                                        <label>Tu</label>
+                                    </div>
+                                </div>
+                                <div class="time-cell">
+                                    <div class="input-group">
+                                        <label>We</label>
+                                    </div>
+                                </div>
+                                <div class="time-cell">
+                                    <div class="input-group">
+                                        <label>Th</label>
+                                    </div>
+                                </div>
+                                <div class="time-cell" style="display:none;">
+                                    <div class="input-group">
+                                        <label>Fri</label>
+                                    </div>
+                                </div>
+                                <div class="time-cell" style="display:none;">
+                                    <div class="input-group">
+                                        <label>Sat</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tsContainer"></div>
+                    <!-- footer -->
+                    <div class="row" style="background-color: darkseagreen;">
+                        <div class="time-cell-total" style="font-weight:bold; width: 90px; padding-top: 8px; margin-left: 47%;">
+                            Total Hours
+                        </div>
+                        <div class="time-cell-total">
+                            <div class="input-group">
+                                <input readonly type="text" class="form-control sunTotal" data-mask>
+                            </div>
+                        </div>
+                        <div class="time-cell-total">
+                            <div class="input-group">
+                                <input readonly type="text" class="form-control monTotal" data-mask>
+                            </div>
+                        </div>
+                        <div class="time-cell-total">
+                            <div class="input-group">
+                                <input readonly type="text" class="form-control tuTotal" data-mask>
+                            </div>
+                        </div>
+                        <div class="time-cell-total">
+                            <div class="input-group">
+                                <input readonly type="text" class="form-control weTotal" data-mask>
+                            </div>
+                        </div>
+                        <div class="time-cell-total">
+                            <div class="input-group">
+                                <input readonly type="text" class="form-control thTotal" data-mask>
+                            </div>
+                        </div>
+                        <div class="time-cell-total" style="display:none;">
+                            <div class="input-group">
+                                <input readonly type="text" class="form-control friTotal" data-mask>
+                            </div>
+                        </div>
+                        <div class="time-cell-total" style="display:none;">
+                            <div class="input-group">
+                                <input readonly type="text" class="form-control satTotal" data-mask>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.4.1/flatly/bootstrap.min.css">
+<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/flick/jquery-ui.css">
+
+<link rel="stylesheet" href="http://cdn.jsdelivr.net/gh/xxjapp/xdialog@3/xdialog.min.css">
+<script src="http://cdn.jsdelivr.net/gh/xxjapp/xdialog@3/xdialog.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        loadSheets();
+    });
+    function loadSheets() {
+        xdialog.startSpin();
+        $.ajax({
+            type: "GET",
+            url: "/timesheet/GetHistory",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                if (data.length > 0) {
+                    $('#ddlTimeSheets').append($("<option value='0'>-- Select TimeSheet --</option>"));
+                    $.each(data, function () {
+                        var fromDate = new Date(this.fromDate);
+                        var toDate = new Date(this.toDate);
+
+                        var text = "From " + fromDate.formatMMDDYYYY() + " To " + toDate.formatMMDDYYYY();
+                        $('#ddlTimeSheets').append($("<option></option>").val(this.id).html(text));
+                    });
+
+                    if (getParameterByName('id') != null) {
+                        $('#ddlTimeSheets').val(getParameterByName('id'));
+                    }
+
+                    ddlSheetChange($('#ddlTimeSheets'));
+                    xdialog.stopSpin();
+                }
+                else {
+                    $('#timeSheetTable').attr('style', 'display:none;');
+                    $('#spNoTimesheet').attr('style', 'display:block;');
+                    xdialog.stopSpin();
+                }
+            },
+            failure: function (response) {
+                xdialog.stopSpin();
+                console.log(response);
+            }
+        });
+    }
+
+    function ddlSheetChange(ddlSheets) {
+        if ($(ddlSheets).val() != '0') {
+            xdialog.startSpin();
+            $.ajax({
+                type: "GET",
+                url: "/timesheet/GetDetailsByTimeSheetId?timesheetId=" + $(ddlSheets).val(),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    if (data != "No date found!") {
+                        $('#spNoTimesheet').attr("style", "display:none;");
+                        $('#tsContainer').html('');
+                        var rowId = 1;
+                        if (data.length > 0) {
+                            $('#timeSheetTable').attr('style', 'display:block;')
+                            $('#spNoTimesheet').attr("style", "display:none;");
+                            $.each(data, function () {
+                                fillSheetRow(this, rowId);
+                                rowId += 1;
+                            });
+                            totalHours();
+                        }
+                        else {
+                            $('#timeSheetTable').attr('style', 'display:none;')
+                            $('#spNoTimesheet').attr("style", "display:block;");
+                        }
+                    }
+                    else {
+                        $('#spNoTimesheet').attr("style", "display:block;");
+                    }
+                    $.ajax({
+                        type: "GET",
+                        url: "/timesheet/GetApprovalTimeLine?timesheetId=" + $(ddlSheets).val(),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'html',
+                        success: function (data) {
+                            $('#timesheetDetails').html(data);
+                        }
+                    });
+                    xdialog.stopSpin();
+                },
+                failure: function (response) {
+                    xdialog.stopSpin();
+                    console.log(response);
+                }
+            });
+        }
+    }
+
+    function fillSheetRow(timesheetRow, rowId) {
+
+        var content = '<div id="row1" class="row tsRow" style="margin-bottom:36px"><div class="row" style="width:55%;margin-left:1px;margin-top:8px;"><div class="col-md-5"><div class="form-group"><div class="input-group" style="padding-top:6px"><select id="ddlPro1" onchange="ddlProjChange(this)" class="form-control select2bs4"><option>-- Select --</option></select></div></div></div><div class="col-md-5"><div class="form-group"><div class="input-group" style="padding-top:6px"><select id="ddlAct1" class="form-control select2bs4"><option>-- Select --</option></select></div></div></div><div class="row"><input id="txtComment1" class="form-control" placeholder="Comment" style="margin-left:30px;width:475px;"></div></div><div style="position:absolute;margin-left:50%"><div class="row ST"><div class="time-cell" style="padding-top:8px">ST</div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control sun" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control mon" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control tu" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control we" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control th" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control fri" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control sat" data-mask></div></div></div><div class="row OT"><div class="time-cell" style="padding-top:8px">OT</div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control sun" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control mon" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control tu" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control we" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control th" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control fri" data-mask></div></div><div class="time-cell"><div class="input-group"><input maxlength="1"  onkeypress="return validateHours(event);" class="form-control sat" data-mask></div></div></div></div><div style="position:absolute;margin-left:96%;margin-top:44px"><i class="fas fa-trash" style="color:red;cursor:pointer;display:none;" onclick="deleteRow(this)"></i></div></div>';
+        content = content.replace("row1", "row" + rowId);
+        content = content.replace("ddlPro1", "ddlPro" + rowId);
+        content = content.replace("ddlAct1", "ddlAct" + rowId);
+        content = content.replace("txtComment1", "txtComment" + rowId);
+
+        $(content).appendTo($('#tsContainer'));
+
+        if (timesheetRow.activity.type == 2) {
+            var projList = $('#ddlPro' + rowId);
+
+            $.ajax({
+                type: "GET",
+                url: "/project/GetUserProjects",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    projList.attr('isPro', 'true');
+                    projList.empty();
+                    $.each(data, function () {
+                        projList.append($("<option></option>").val(this.id).html(this.name));
+                    });
+                    projList.val(timesheetRow.activity.projectId);
+                    $.ajax({
+                        type: "GET",
+                        url: "/activity/GetUserProjectActivity?projectId=" + projList.val(),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            $("#ddlAct" + rowId).empty();
+                            $.each(data, function () {
+                                $("#ddlAct" + rowId).append($("<option></option>").val(this.id).html(this.name));
+                            });
+                            $('#ddlAct' + rowId).val(timesheetRow.activityId);
+                        },
+                        failure: function (response) {
+                            console.log(response);
+                        }
+                    });
+                },
+                failure: function (response) {
+                    console.log(response);
+                }
+            });
+
+        }
+        else {
+            var projList = $('#ddlPro' + rowId);
+            projList.attr('isPro', 'false');
+            projList.empty();
+            projList.append($("<option></option>").val('General').html('General Activities'));
+
+            $.ajax({
+                type: "GET",
+                url: "/Activity/GetGeneral",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $("#ddlAct" + rowId).empty();
+                    $.each(data, function () {
+                        $('#ddlAct' + rowId).append($("<option></option>").val(this.id).html(this.name));
+                    });
+                    $('#ddlAct' + rowId).val(timesheetRow.activityId);
+                },
+                failure: function (response) {
+                    console.log(response);
+                }
+            });
+        }
+
+        $('#txtComment' + rowId).val(timesheetRow.comments);
+
+        $('#row' + rowId + ' .ST .sun')[0].value = timesheetRow.sun == undefined ? "0" : timesheetRow.sun;
+        $('#row' + rowId + ' .ST .mon')[0].value = timesheetRow.mon == undefined ? "0" : timesheetRow.mon;
+        $('#row' + rowId + ' .ST .tu')[0].value = timesheetRow.tu == undefined ? "0" : timesheetRow.tu;
+        $('#row' + rowId + ' .ST .we')[0].value = timesheetRow.we == undefined ? "0" : timesheetRow.we;
+        $('#row' + rowId + ' .ST .th')[0].value = timesheetRow.th == undefined ? "0" : timesheetRow.th;
+        $('#row' + rowId + ' .ST .fri')[0].value = timesheetRow.fri == undefined ? "0" : timesheetRow.fri;
+        $('#row' + rowId + ' .ST .sat')[0].value = timesheetRow.sat == undefined ? "0" : timesheetRow.sat;
+
+
+        $('#row' + rowId + ' .OT .sun')[0].value = timesheetRow.sunOver == undefined ? "0" : timesheetRow.sunOver;
+        $('#row' + rowId + ' .OT .mon')[0].value = timesheetRow.monOver == undefined ? "0" : timesheetRow.monOver;
+        $('#row' + rowId + ' .OT .tu')[0].value = timesheetRow.tuOver == undefined ? "0" : timesheetRow.tuOver;
+        $('#row' + rowId + ' .OT .we')[0].value = timesheetRow.weOver == undefined ? "0" : timesheetRow.weOver;
+        $('#row' + rowId + ' .OT .th')[0].value = timesheetRow.thOver == undefined ? "0" : timesheetRow.thOver;
+        $('#row' + rowId + ' .OT .fri')[0].value = timesheetRow.friOver == undefined ? "0" : timesheetRow.friOver;
+        $('#row' + rowId + ' .OT .sat')[0].value = timesheetRow.satOver == undefined ? "0" : timesheetRow.satOver;
+
+        $('.ST input').on('change', function () { totalHours(); });
+        $('.OT input').on('change', function () { totalHours(); });
+
+        $('#tsContainer input').each(function () {
+            $(this).attr('readonly', 'readonly');
+        });
+
+        $('#tsContainer select').each(function () {
+            $(this).attr('readonly', 'readonly');
+        });
+
+        $('.row .OT').attr('style', 'display: none;');
+        $('.ST .input-group .fri').each(function () {
+            $(this).prop("readonly", true);
+            $(this).prop("disabled", true);
+            $(this).attr("style", "display:none;");
+
+        });
+        $('.ST .input-group .sat').each(function () {
+            $(this).prop("readonly", true);
+            $(this).prop("disabled", true);
+            $(this).attr("style", "display:none;");
+        });
+    }
+
+    function getProjects(ddlProj, isProject) {
+
+        if (isProject) {
+            var projList = $('#' + ddlProj);
+
+            $.ajax({
+                type: "GET",
+                url: "/project/GetUserProjects",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    projList.attr('isPro', 'true');
+                    projList.empty();
+                    $.each(data, function () {
+                        projList.append($("<option></option>").val(this.id).html(this.name));
+                    });
+                    ddlProjChange($('#' + ddlProj)[0]);
+                },
+                failure: function (response) {
+                    console.log(response);
+                }
+            });
+
+        }
+        else {
+            var projList = $('#' + ddlProj);
+            projList.attr('isPro', 'false');
+            projList.empty();
+            projList.append($("<option></option>").val('General').html('General Activities'));
+
+            var rowNumber = ddlProj.replace('ddlPro', '');
+
+            $.ajax({
+                type: "GET",
+                url: "/Activity/GetGeneral",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $("#ddlAct" + rowNumber).empty();
+                    $.each(data, function () {
+                        $('#ddlAct' + rowNumber).append($("<option></option>").val(this.id).html(this.name));
+                    });
+                },
+                failure: function (response) {
+                    console.log(response);
+                }
+            });
+
+        }
+
+    }
+
+    function ddlProjChange(ddlProj) {
+
+        var rowNumber = ddlProj.id.replace('ddlPro', '');
+
+        if ($(ddlProj).attr('isPro') == 'true') {
+            $.ajax({
+                type: "GET",
+                url: "/activity/GetUserProjectActivity?projectId=" + $(ddlProj).val(),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $("#ddlAct" + rowNumber).empty();
+                    $.each(data, function () {
+                        $("#ddlAct" + rowNumber).append($("<option></option>").val(this.id).html(this.name));
+                    });
+                },
+                failure: function (response) {
+                    console.log(response);
+                }
+            });
+        }
+    }
+
+    Date.prototype.formatMMDDYYYY = function () {
+        return this.getDate() +
+            "-" + (this.getMonth() + 1) +
+            "-" + this.getFullYear();
+    }
+
+    function validateHours(evt) {
+        return digitKeyOnly(evt);
+    }
+
+    function digitKeyOnly(e) {
+        console.log($(e));
+        var keyCode = e.keyCode == 0 ? e.charCode : e.keyCode;
+        var value = Number(e.key);
+        console.log(value);
+
+        if ((keyCode >= 37 && keyCode <= 40) || (keyCode == 8 || keyCode == 9 || keyCode == 13) || (keyCode >= 48 && keyCode <= 57)) {
+            console.log('is');
+            var isValidDigit = isValidNumber(value);
+            if (e.target.value > 9) {
+                isValidDigit = false;
+            }
+
+            var total = 0;
+
+            $('.ST .' + $(e.target).attr('class').split(' ')[1]).each(function () {
+                console.log(this);
+                if (this != e.target) {
+                    total += Number($(this).val());
+                }
+            });
+            if (isValidDigit) {
+                if ($(e.target).parents('.OT').length == 0) {
+                    total += value;
+                    console.log(total);
+                    console.log('valid total ' + total);
+                    if (total > 9) {
+                        e.target.preventDefault;
+                        isValidDigit = false;
+                        xdialog.open({
+                            title: 'Validation error',
+                            body: 'Standartd time not exceed 9 hours!',
+                            buttons: ['ok'],
+                            style: 'min-width:38em;',
+                            onok: function (param) {
+                            }
+                        });
+                    }
+                    else {
+                        isValidDigit = true;
+                    }
+                }
+            }
+            return isValidDigit;
+        }
+        return false;
+    }
+
+    function getParameterByName(name, url = window.location.href) {
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    function isValidNumber(number) {
+        return (1 <= number && number <= 9)
+    }
+
+    function totalHours() {
+        var total = 0;
+        $('.ST .sun').each(function () {
+            console.log($(this).text());
+            total += Number($(this).val());
+        });
+        $('.OT .sun').each(function () {
+            total += Number($(this).val());
+        });
+        $('.sunTotal').val(total);
+        $('.sunTotal').attr('style', 'font-weight:bold;');
+
+        var total = 0;
+        $('.ST .mon').each(function () {
+            total += Number($(this).val());
+        });
+        $('.OT .mon').each(function () {
+            total += Number($(this).val());
+        });
+        $('.monTotal').val(total);
+        $('.monTotal').attr('style', 'font-weight:bold;');
+
+        var total = 0;
+        $('.ST .tu').each(function () {
+            total += Number($(this).val());
+        });
+        $('.OT .tu').each(function () {
+            total += Number($(this).val());
+        });
+        $('.tuTotal').val(total);
+        $('.tuTotal').attr('style', 'font-weight:bold;');
+
+        var total = 0;
+        $('.ST .we').each(function () {
+            total += Number($(this).val());
+        });
+        $('.OT .we').each(function () {
+            total += Number($(this).val());
+        });
+        $('.weTotal').val(total);
+        $('.weTotal').attr('style', 'font-weight:bold;');
+
+
+        var total = 0;
+        $('.ST .th').each(function () {
+            total += Number($(this).val());
+        });
+        $('.OT .th').each(function () {
+            total += Number($(this).val());
+        });
+        $('.thTotal').val(total);
+        $('.thTotal').attr('style', 'font-weight:bold;');
+
+        var total = 0;
+        $('.ST .fri').each(function () {
+            total += Number($(this).val());
+        });
+        $('.OT .fri').each(function () {
+            total += Number($(this).val());
+        });
+        $('.friTotal').val(total);
+        $('.friTotal').attr('style', 'font-weight:bold;');
+
+        var total = 0;
+        $('.ST .sat').each(function () {
+            total += Number($(this).val());
+        });
+        $('.OT .sat').each(function () {
+            total += Number($(this).val());
+        });
+        $('.satTotal').val(total);
+        $('.satTotal').attr('style', 'font-weight:bold;');
+
+    }
+</script>
+<style>
+    .time-cell {
+        width: 58px;
+        margin: 10px 10px 10px 10px;
+    }
+
+    .time-cell-total {
+        width: 58px;
+        margin: 10px 10px 10px 10px;
+    }
+
+    .seper {
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
